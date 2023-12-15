@@ -17,9 +17,16 @@ export const initRender = () => {
     }
 
     const renderPoint = (point: TPoint, index: string) => {
+        // draw a gradient from blue to transparent, radius 15
+        const gradient = ctx.createRadialGradient(point.position.x, point.position.y, 0, point.position.x, point.position.y, MAX_DISTANCE);
+        gradient.addColorStop(0, "rgba(0, 0, 255, 1)");
+        gradient.addColorStop(1, "rgba(0, 0, 255, 0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(point.position.x - MAX_DISTANCE, point.position.y - MAX_DISTANCE, MAX_DISTANCE * 2, MAX_DISTANCE * 2);
+
         ctx.beginPath();
         ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
-        ctx.fillStyle = `blue`;
+        ctx.fillStyle = `rgba(0, 0, 170)`;
         if (index === "0") {
             ctx.fillStyle = "rgb(255, 0, 255)";
         }
