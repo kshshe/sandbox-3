@@ -1,6 +1,6 @@
 import { TPowerProcessor } from "./powers";
 
-const BASE_FORCE = 1;
+const BASE_FORCE = 0.3;
 
 export const randomnessProcessor: TPowerProcessor = (point, timeDiff) => {
     const shouldChange = Math.random() > 0.9;

@@ -2,8 +2,8 @@ import { TPowerProcessor } from "./powers";
 import { findClosestPoints, MAX_DISTANCE } from "../utils/findClosestPoints";
 import { TVector } from "../data.t";
 
-const BASE_FORCE = 60;
-const BASE_ANTI_DENSITY_FORCE = 3;
+const BASE_FORCE = 10;
+const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 10;
 
 const getForceValue = (distance: number) => {
     const normalizedDistance = distance / MAX_DISTANCE;

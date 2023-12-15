@@ -31,8 +31,14 @@ export const initRender = () => {
         isPressed = false;
     });
 
-    canvas.addEventListener('mousedown', () => {
-        setMousePosition(currentMousePosition);
+    canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    })
+
+    canvas.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const isRightClick = e.button === 2;
+        setMousePosition(currentMousePosition, isRightClick ? -1 : 1);
         isPressed = true;
     })
 
@@ -49,7 +55,7 @@ export const initRender = () => {
 
     const renderPoint = (point: TPoint, index: string) => {
         ctx.beginPath();
-        ctx.arc(point.position.x, point.position.y, POINT_RADIUS * 6, 0, 2 * Math.PI);
+        ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(0, 0, 170)`;
         if (index === "0") {
             ctx.fillStyle = "rgb(255, 0, 255)";
@@ -57,10 +63,10 @@ export const initRender = () => {
         ctx.fill();
 
         // circle for area of influence
-        ctx.beginPath();
-        ctx.arc(point.position.x, point.position.y, MAX_DISTANCE, 0, 2 * Math.PI);
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-        ctx.stroke();
+        // ctx.beginPath();
+        // ctx.arc(point.position.x, point.position.y, MAX_DISTANCE, 0, 2 * Math.PI);
+        // ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+        // ctx.stroke();
     }
 
     const render = () => {
