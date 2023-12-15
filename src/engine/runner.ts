@@ -1,7 +1,6 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
-import { resetCache } from "./utils/findClosestPoints";
 import { multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
 const fps = new FPS()
@@ -23,6 +22,7 @@ for (let i = 0; i < 1000; i++) {
             x: 0,
             y: 0,
         },
+        temporaryData: {},
     });
 }
 
@@ -61,8 +61,6 @@ const step = () => {
         return;
     }
 
-    resetCache();
-
     const timeDiff = (now - lastTime) * 7;
 
     for (const point of points) {
@@ -72,7 +70,7 @@ const step = () => {
     }
 
     for (const point of points) {
-        // point.velocity = multiplyVector(point.velocity, 0.99);
+        point.velocity = multiplyVector(point.velocity, 0.9999);
 
         if (Math.abs(point.velocity.x) < 0.1) {
             point.velocity.x = 0;

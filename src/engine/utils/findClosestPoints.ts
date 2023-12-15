@@ -5,25 +5,11 @@ import { getDistance, getVectorLength } from "./vector";
 
 export const MAX_DISTANCE = 35;
 
-const cache = new Map<TPoint, Array<{
-    point: TPoint,
-    distance: number,
-    direction: TVector,
-}>>();
-
-export const resetCache = () => {
-    cache.clear();
-}
-
 export const findClosestPoints = (point: TPoint, includeBorders = false): Array<{
     point: TPoint,
     distance: number,
     direction: TVector,
 }> => {
-    if (cache.has(point)) {
-        return cache.get(point)!;
-    }
-
     const closestPoints: Array<{
         point: TPoint,
         distance: number,
@@ -66,6 +52,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    temporaryData: {},
                 },
                 distance: point.position.x - BORDERS.minX,
                 direction: {
@@ -86,6 +73,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    temporaryData: {},
                 },
                 distance: BORDERS.maxX - point.position.x,
                 direction: {
@@ -106,6 +94,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    temporaryData: {},
                 },
                 distance: point.position.y - BORDERS.minY,
                 direction: {
@@ -126,6 +115,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    temporaryData: {},
                 },
                 distance: BORDERS.maxY - point.position.y,
                 direction: {
@@ -136,7 +126,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
         }
     }
 
-    cache.set(point, closestPoints);
+    point.temporaryData.closestPoints = closestPoints;
 
     return closestPoints;
 }
