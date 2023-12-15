@@ -1,38 +1,37 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
+import { multiplyVector } from "./utils/vector";
 
 export const points: TPoint[] = [];
 
-const REFLECTION = 0.8;
+const REFLECTION = 0.2;
 
 // @ts-ignore
 window.points = points;
 
-points.push({
-    position: { x: 100, y: 100 },
-    velocity: { x: 0, y: 0 },
-});
-
-points.push({
-    position: { x: 200, y: 100 },
-    velocity: { x: 0, y: 0 },
-});
-
-points.push({
-    position: { x: 120, y: 150 },
-    velocity: { x: 20, y: 0 },
-});
+for (let i = 0; i < 50; i++) {
+    points.push({
+        position: {
+            x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
+            y: Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY,
+        },
+        velocity: {
+            x: 0,
+            y: 0,
+        },
+    });
+}
 
 const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", borderValue: number) => {
     if (minOrMax === "min") {
-        if (point.position[axis] < borderValue) {
+        if (point.position[axis] <= borderValue + POINT_RADIUS) {
             point.position[axis] = borderValue + POINT_RADIUS;
             point.velocity[axis] *= -REFLECTION;
         }
     }
     if (minOrMax === "max") {
-        if (point.position[axis] > borderValue) {
+        if (point.position[axis] >= borderValue - POINT_RADIUS) {
             point.position[axis] = borderValue - POINT_RADIUS;
             point.velocity[axis] *= -REFLECTION;
         }
@@ -54,12 +53,14 @@ const step = () => {
         point.position.x += point.velocity.x * timeDiff / 1000;
         point.position.y += point.velocity.y * timeDiff / 1000;
 
+        point.velocity = multiplyVector(point.velocity, 0.99);
+
         processBorder(point, "x", "min", BORDERS.minX);
         processBorder(point, "x", "max", BORDERS.maxX);
         processBorder(point, "y", "min", BORDERS.minY);
         processBorder(point, "y", "max", BORDERS.maxY);
     }
-    
+
     requestAnimationFrame(step);
 }
 

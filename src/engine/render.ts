@@ -1,6 +1,7 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { points } from "./runner";
+import { MAX_DISTANCE } from "./utils/findClosestPoints";
 
 export const initRender = () => {
     const canvas = document.createElement("canvas");
@@ -19,6 +20,12 @@ export const initRender = () => {
         ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
         ctx.fillStyle = "blue";
         ctx.fill();
+
+        const radius = MAX_DISTANCE;
+        ctx.beginPath();
+        ctx.arc(point.position.x, point.position.y, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = "rgba(0, 0, 255, 0.1)";
+        ctx.stroke();
     }
 
     const render = () => {

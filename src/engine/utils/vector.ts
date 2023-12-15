@@ -13,3 +13,8 @@ export const multiplyVector = (vector: TVector, scalar: number): TVector => ({
 export const getVectorLength = (vector: TVector): number => {
     return Math.sqrt(vector.x ** 2 + vector.y ** 2);
 }
+
+export const getDistance = (vectorA: TVector, vectorB: TVector): number => {
+    const diffVector = sumVectors(vectorA, multiplyVector(vectorB, -1));
+    return getVectorLength(diffVector);
+}
