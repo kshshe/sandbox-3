@@ -48,13 +48,6 @@ export const initRender = () => {
     }
 
     const renderPoint = (point: TPoint, index: string) => {
-        // draw a gradient from blue to transparent, radius 15
-        const gradient = ctx.createRadialGradient(point.position.x, point.position.y, 0, point.position.x, point.position.y, MAX_DISTANCE);
-        gradient.addColorStop(0, "rgba(0, 0, 255, 1)");
-        gradient.addColorStop(1, "rgba(0, 0, 255, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(point.position.x - MAX_DISTANCE, point.position.y - MAX_DISTANCE, MAX_DISTANCE * 2, MAX_DISTANCE * 2);
-
         ctx.beginPath();
         ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(0, 0, 170)`;
@@ -89,7 +82,7 @@ export const initRender = () => {
         if (currentMousePosition) {
             ctx.beginPath();
             ctx.arc(currentMousePosition.x * BORDERS.maxX, currentMousePosition.y * BORDERS.maxY, MAX_MOUSE_DISTANCE, 0, 2 * Math.PI);
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.strokeStyle = "black";
             ctx.stroke();
         }
 

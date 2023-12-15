@@ -7,7 +7,7 @@ const BASE_FORCE = 60;
 const getForceValue = (distance: number) => {
     const normalizedDistance = distance / MAX_DISTANCE;
     const result = 1 - Math.abs(normalizedDistance);
-    return Math.pow(result, 10);
+    return Math.pow(result, 3);
 }
 
 export const densityProcessor: TPowerProcessor = (point, timeDiff) => {
