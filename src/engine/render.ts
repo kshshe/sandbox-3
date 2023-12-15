@@ -132,6 +132,7 @@ export const initRender = () => {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const sizes = points.map((point) => {
+            return 6;
             const closestPoints = findClosestPoints(point);
             return Math.max(6, closestPoints.length)
         });
