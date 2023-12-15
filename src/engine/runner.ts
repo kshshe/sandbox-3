@@ -76,7 +76,7 @@ const step = () => {
     }
 
     for (const point of points) {
-        point.velocity = multiplyVector(point.velocity, 0.99);
+        point.velocity = multiplyVector(point.velocity, 0.9999);
 
         point.velocity.x += point.acceleration.x * timeDiff / 1000;
         point.velocity.y += point.acceleration.y * timeDiff / 1000;
