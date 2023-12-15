@@ -1,7 +1,6 @@
 import { TPowerProcessor } from "./powers";
 import { findClosestPoints, MAX_DISTANCE } from "../utils/findClosestPoints";
 import { TVector } from "../data.t";
-import { multiplyVector } from "../utils/vector";
 
 const BASE_FORCE = 40;
 const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 20;

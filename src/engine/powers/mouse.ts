@@ -11,7 +11,7 @@ export const setMousePosition = (position: TVector | null, direction: typeof mou
 }
 
 export const MAX_MOUSE_DISTANCE = 150;
-const BASE_FORCE = 20;
+const BASE_FORCE = 10;
 
 export const mouseProcessor: TPowerProcessor = (point, timeDiff) => {
     if (!mousePosition) {
