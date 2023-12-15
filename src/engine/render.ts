@@ -1,8 +1,15 @@
-import { BORDERS, POINT_RADIUS } from "./constants";
-import { TPoint, TVector } from "./data.t";
-import { MAX_MOUSE_DISTANCE, setMousePosition } from "./powers/mouse";
+import { BORDERS } from "./constants";
+import { initControl } from "./controls";
+import { TVector } from "./data.t";
+import { setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
-import { MAX_DISTANCE, findClosestPoints } from "./utils/findClosestPoints";
+
+let customSizes = true;
+
+initControl('input#custom-sizes', (e) => {
+    const input = e.target as HTMLInputElement;
+    customSizes = input.checked;
+})
 
 export const initRender = () => {
     const canvas = document.createElement("canvas");
@@ -36,6 +43,7 @@ export const initRender = () => {
     })
 
     canvas.addEventListener('mousedown', (e) => {
+        console.log(e.button);
         e.preventDefault();
         const isRightClick = e.button === 2;
         setMousePosition(currentMousePosition, isRightClick ? -1 : 1);
@@ -132,6 +140,9 @@ export const initRender = () => {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const sizes = points.map((point) => {
+            if (!customSizes) {
+                return 6;
+            }
             const closestPoints = point.temporaryData.closestPoints as unknown[]
             return Math.max(6, closestPoints?.length || 0)
         });

@@ -22,6 +22,10 @@ for (let i = 0; i < 1000; i++) {
             x: 0,
             y: 0,
         },
+        acceleration: {
+            x: 0,
+            y: 0,
+        },
         temporaryData: {},
     });
 }
@@ -64,13 +68,18 @@ const step = () => {
     const timeDiff = (now - lastTime) * 7;
 
     for (const point of points) {
+        point.acceleration.x = 0;
+        point.acceleration.y = 0;
         for (const power of powers) {
             power(point, timeDiff);
         }
     }
 
     for (const point of points) {
-        point.velocity = multiplyVector(point.velocity, 0.9999);
+        point.velocity = multiplyVector(point.velocity, 0.99);
+
+        point.velocity.x += point.acceleration.x * timeDiff / 1000;
+        point.velocity.y += point.acceleration.y * timeDiff / 1000;
 
         if (Math.abs(point.velocity.x) < 0.1) {
             point.velocity.x = 0;

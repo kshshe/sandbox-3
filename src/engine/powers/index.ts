@@ -19,6 +19,13 @@ export const powers: Array<TPowerProcessor> = [
     mouseProcessor,
 ];
 
+const listPowers = () => {
+    console.log('Powers:');
+    for (const power of powers) {
+        console.log(power.name);
+    }
+}
+
 initControl('input#gravity', (e) => {
     const input = e.target as HTMLInputElement;
     if (input.checked) {
@@ -26,6 +33,7 @@ initControl('input#gravity', (e) => {
     } else {
         powers.splice(powers.indexOf(availablePowers.gravity), 1);
     }
+    listPowers();
 })
 
 initControl('input#density', (e) => {
@@ -35,4 +43,7 @@ initControl('input#density', (e) => {
     } else {
         powers.splice(powers.indexOf(availablePowers.density), 1);
     }
+    listPowers();
 })
+
+listPowers();

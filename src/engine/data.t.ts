@@ -6,5 +6,6 @@ export type TVector = {
 export type TPoint = {
     position: TVector,
     velocity: TVector,
+    acceleration: TVector,
     temporaryData: Record<string, any>,
 }

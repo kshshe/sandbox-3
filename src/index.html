@@ -1,33 +1,30 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <title>Sandbox</title>
-    <link rel="stylesheet" href="global.css">
-  </head>
-  <body>
-    <div
-      class="controls"
-    >
-      <label>
-        <input
-          type="checkbox"
-          id="density"
-          name="density"
-          checked
-        />
-        Давление
-      </label>
 
-      <label>
-        <input
-          type="checkbox"
-          id="gravity"
-          name="gravity"
-          checked
-        />
-        Гравитация
+<head>
+  <meta charset="utf-8" />
+  <title>Sandbox</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+
+<body>
+  <div class="controls">
+    <label>
+      <input type="checkbox" id="density" name="density" checked />
+      Давление
+    </label>
+
+    <label>
+      <input type="checkbox" id="gravity" name="gravity" checked />
+      Гравитация
+    </label>
+
+    <label>
+      <input type="checkbox" id="custom-sizes" name="custom-sizes" checked />
+      Размеры точек
+    </label>
   </div>
-    <script type="module" src="engine/index.ts"></script>
-  </body>
+  <script type="module" src="engine/index.ts"></script>
+</body>
+
 </html>

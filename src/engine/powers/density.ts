@@ -3,8 +3,8 @@ import { findClosestPoints, MAX_DISTANCE } from "../utils/findClosestPoints";
 import { TVector } from "../data.t";
 
 const BASE_FORCE = 40;
-const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 20;
-const VISCOSITY = 0.01;
+const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 40;
+const VISCOSITY = 0.05;
 
 const getForceValue = (distance: number) => {
     const normalizedDistance = distance / MAX_DISTANCE;
@@ -17,7 +17,7 @@ const getAntiForceValue = (distance: number) => {
     return Math.pow(Math.abs(normalizedDistance), 2);
 }
 
-export const densityProcessor: TPowerProcessor = (point, timeDiff) => {
+export const densityProcessor: TPowerProcessor = (point) => {
     const closestPoints = findClosestPoints(point);
     const pointsCount = closestPoints.length;
 
@@ -40,22 +40,22 @@ export const densityProcessor: TPowerProcessor = (point, timeDiff) => {
         const forceValue = -getForceValue(distance);
         const antiForceValue = getAntiForceValue(distance);
 
-        const xVelocityChange = (direction.x * forceValue * BASE_FORCE * timeDiff / 1000);
-        const yVelocityChange = (direction.y * forceValue * BASE_FORCE * timeDiff / 1000);
+        const xAccelerationChange = (direction.x * forceValue * BASE_FORCE);
+        const yAccelerationChange = (direction.y * forceValue * BASE_FORCE);
 
-        const xAntiVelocityChange = (direction.x * antiForceValue * BASE_ANTI_DENSITY_FORCE * timeDiff / 1000);
-        const yAntiVelocityChange = (direction.y * antiForceValue * BASE_ANTI_DENSITY_FORCE * timeDiff / 1000);
+        const xAntiAccelerationChange = (direction.x * antiForceValue * BASE_ANTI_DENSITY_FORCE);
+        const yAntiAccelerationChange = (direction.y * antiForceValue * BASE_ANTI_DENSITY_FORCE);
 
-        const xViscosityChange = (otherPoint.velocity.x - point.velocity.x) * VISCOSITY * timeDiff / 1000;
-        const yViscosityChange = (otherPoint.velocity.y - point.velocity.y) * VISCOSITY * timeDiff / 1000;
+        const xViscosityChange = (otherPoint.velocity.x - point.velocity.x) * VISCOSITY;
+        const yViscosityChange = (otherPoint.velocity.y - point.velocity.y) * VISCOSITY;
 
-        totalForce.x += xVelocityChange + xAntiVelocityChange + xViscosityChange;
-        totalForce.y += yVelocityChange + yAntiVelocityChange + yViscosityChange;
+        totalForce.x += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
+        totalForce.y += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
 
-        otherPoint.velocity.x -= xVelocityChange + xAntiVelocityChange + xViscosityChange;
-        otherPoint.velocity.y -= yVelocityChange + yAntiVelocityChange + yViscosityChange;
+        otherPoint.acceleration.x -= xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
+        otherPoint.acceleration.y -= yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
     }
 
-    point.velocity.x += totalForce.x;
-    point.velocity.y += totalForce.y;
+    point.acceleration.x += totalForce.x;
+    point.acceleration.y += totalForce.y;
 }

@@ -52,6 +52,10 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    acceleration: {
+                        x: 0,
+                        y: 0,
+                    },
                     temporaryData: {},
                 },
                 distance: point.position.x - BORDERS.minX,
@@ -70,6 +74,10 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         y: point.position.y,
                     },
                     velocity: {
+                        x: 0,
+                        y: 0,
+                    },
+                    acceleration: {
                         x: 0,
                         y: 0,
                     },
@@ -94,6 +102,10 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         x: 0,
                         y: 0,
                     },
+                    acceleration: {
+                        x: 0,
+                        y: 0,
+                    },
                     temporaryData: {},
                 },
                 distance: point.position.y - BORDERS.minY,
@@ -112,6 +124,10 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
                         y: BORDERS.maxY,
                     },
                     velocity: {
+                        x: 0,
+                        y: 0,
+                    },
+                    acceleration: {
                         x: 0,
                         y: 0,
                     },

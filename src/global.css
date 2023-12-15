@@ -21,4 +21,9 @@ canvas {
     padding: 10px;
     border-radius: 5px;
     color: #fff;
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
 }

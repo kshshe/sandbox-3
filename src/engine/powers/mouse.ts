@@ -13,7 +13,7 @@ export const setMousePosition = (position: TVector | null, direction: typeof mou
 export const MAX_MOUSE_DISTANCE = 150;
 const BASE_FORCE = 20;
 
-export const mouseProcessor: TPowerProcessor = (point, timeDiff) => {
+export const mouseProcessor: TPowerProcessor = (point) => {
     if (!mousePosition) {
         return;
     }
@@ -23,7 +23,7 @@ export const mouseProcessor: TPowerProcessor = (point, timeDiff) => {
         return;
     }
 
-    const force = mouseDirection * BASE_FORCE * timeDiff / 1000;
+    const force = mouseDirection * BASE_FORCE;
     const direction = {
         x: mousePosition.x - point.position.x,
         y: mousePosition.y - point.position.y,
@@ -35,6 +35,6 @@ export const mouseProcessor: TPowerProcessor = (point, timeDiff) => {
         y: direction.y / length,
     };
 
-    point.velocity.x += normalizedDirection.x * force;
-    point.velocity.y += normalizedDirection.y * force;
+    point.acceleration.x += normalizedDirection.x * force;
+    point.acceleration.y += normalizedDirection.y * force;
 }
