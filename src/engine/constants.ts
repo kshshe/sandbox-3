@@ -1,4 +1,4 @@
-export const POINT_RADIUS = 5;
+export const POINT_RADIUS = 2;
 
 export const BORDERS = {
     minX: 0,

@@ -49,7 +49,7 @@ export const initRender = () => {
 
     const renderPoint = (point: TPoint, index: string) => {
         ctx.beginPath();
-        ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
+        ctx.arc(point.position.x, point.position.y, POINT_RADIUS * 6, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(0, 0, 170)`;
         if (index === "0") {
             ctx.fillStyle = "rgb(255, 0, 255)";
