@@ -1,14 +1,45 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
-import { TPoint } from "./data.t";
+import { TPoint, TVector } from "./data.t";
+import { MAX_MOUSE_DISTANCE, setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
 import { MAX_DISTANCE } from "./utils/findClosestPoints";
-import { getVectorLength } from "./utils/vector";
 
 export const initRender = () => {
     const canvas = document.createElement("canvas");
     canvas.width = BORDERS.maxX;
     canvas.height = BORDERS.maxY;
     document.body.appendChild(canvas);
+
+    let currentMousePosition: TVector | null = null;
+    let isPressed = false;
+    canvas.addEventListener("mousemove", (event) => {
+        const pixelX = event.clientX;
+        const pixelY = event.clientY;
+
+        currentMousePosition = {
+            x: pixelX,
+            y: pixelY,
+        };
+        if (isPressed) {
+            setMousePosition(currentMousePosition);
+        }
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
+    });
+
+    canvas.addEventListener('mousedown', () => {
+        setMousePosition(currentMousePosition);
+        isPressed = true;
+    })
+
+    canvas.addEventListener('mouseup', () => {
+        setMousePosition(null);
+        isPressed = false;
+    })
 
     const ctx = canvas.getContext("2d");
 
@@ -53,6 +84,13 @@ export const initRender = () => {
 
         for (const pointIndex in points) {
             renderPoint(points[pointIndex], pointIndex);
+        }
+
+        if (currentMousePosition) {
+            ctx.beginPath();
+            ctx.arc(currentMousePosition.x * BORDERS.maxX, currentMousePosition.y * BORDERS.maxY, MAX_MOUSE_DISTANCE, 0, 2 * Math.PI);
+            ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.stroke();
         }
 
         requestAnimationFrame(render);

@@ -3,7 +3,7 @@ import { TPoint, TVector } from "../data.t";
 import { points } from "../runner";
 import { getDistance, getVectorLength } from "./vector";
 
-export const MAX_DISTANCE = 40;
+export const MAX_DISTANCE = 80;
 
 export const findClosestPoints = (point: TPoint, includeBorders = false): Array<{
     point: TPoint,
