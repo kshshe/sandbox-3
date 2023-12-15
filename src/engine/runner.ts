@@ -2,6 +2,8 @@ import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
 import { multiplyVector } from "./utils/vector";
+import { FPS } from 'yy-fps'
+const fps = new FPS()
 
 export const points: TPoint[] = [];
 
@@ -10,7 +12,7 @@ const REFLECTION = 0.45;
 // @ts-ignore
 window.points = points;
 
-for (let i = 0; i < 400; i++) {
+for (let i = 0; i < 1000; i++) {
     points.push({
         position: {
             x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
@@ -87,7 +89,7 @@ const step = () => {
     }
 
     lastTime = now;
-
+    fps.frame()
     requestAnimationFrame(step);
 }
 
