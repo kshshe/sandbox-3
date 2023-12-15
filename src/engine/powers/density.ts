@@ -1,9 +1,11 @@
 import { TPowerProcessor } from "./powers";
 import { findClosestPoints, MAX_DISTANCE } from "../utils/findClosestPoints";
 import { TVector } from "../data.t";
+import { multiplyVector } from "../utils/vector";
 
-const BASE_FORCE = 10;
-const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 10;
+const BASE_FORCE = 40;
+const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 20;
+const VISCOSITY = 0.01;
 
 const getForceValue = (distance: number) => {
     const normalizedDistance = distance / MAX_DISTANCE;
@@ -35,6 +37,7 @@ export const densityProcessor: TPowerProcessor = (point, timeDiff) => {
             debugger
             continue;
         }
+
         const forceValue = -getForceValue(distance);
         const antiForceValue = getAntiForceValue(distance);
 
@@ -44,11 +47,14 @@ export const densityProcessor: TPowerProcessor = (point, timeDiff) => {
         const xAntiVelocityChange = (direction.x * antiForceValue * BASE_ANTI_DENSITY_FORCE * timeDiff / 1000);
         const yAntiVelocityChange = (direction.y * antiForceValue * BASE_ANTI_DENSITY_FORCE * timeDiff / 1000);
 
-        totalForce.x += xVelocityChange + xAntiVelocityChange;
-        totalForce.y += yVelocityChange + yAntiVelocityChange;
+        const xViscosityChange = (otherPoint.velocity.x - point.velocity.x) * VISCOSITY * timeDiff / 1000;
+        const yViscosityChange = (otherPoint.velocity.y - point.velocity.y) * VISCOSITY * timeDiff / 1000;
 
-        otherPoint.velocity.x -= xVelocityChange + xAntiVelocityChange;
-        otherPoint.velocity.y -= yVelocityChange + yAntiVelocityChange;
+        totalForce.x += xVelocityChange + xAntiVelocityChange + xViscosityChange;
+        totalForce.y += yVelocityChange + yAntiVelocityChange + yViscosityChange;
+
+        otherPoint.velocity.x -= xVelocityChange + xAntiVelocityChange + xViscosityChange;
+        otherPoint.velocity.y -= yVelocityChange + yAntiVelocityChange + yViscosityChange;
     }
 
     point.velocity.x += totalForce.x;

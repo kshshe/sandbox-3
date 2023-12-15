@@ -58,7 +58,7 @@ const step = () => {
         return;
     }
 
-    const timeDiff = (now - lastTime) * 10;
+    const timeDiff = (now - lastTime) * 7;
 
     for (const point of points) {
         for (const power of powers) {
@@ -67,7 +67,7 @@ const step = () => {
     }
 
     for (const point of points) {
-        point.velocity = multiplyVector(point.velocity, 0.99);
+        // point.velocity = multiplyVector(point.velocity, 0.99);
 
         if (Math.abs(point.velocity.x) < 0.1) {
             point.velocity.x = 0;
