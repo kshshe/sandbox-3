@@ -2,6 +2,7 @@ import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { points } from "./runner";
 import { MAX_DISTANCE } from "./utils/findClosestPoints";
+import { getVectorLength } from "./utils/vector";
 
 export const initRender = () => {
     const canvas = document.createElement("canvas");
@@ -15,24 +16,36 @@ export const initRender = () => {
         throw new Error("Can't get canvas context");
     }
 
-    const renderPoint = (point: TPoint) => {
+    const renderPoint = (point: TPoint, index: string) => {
         ctx.beginPath();
         ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = `blue`;
+        if (index === "0") {
+            ctx.fillStyle = "rgb(255, 0, 255)";
+        }
         ctx.fill();
 
-        const radius = MAX_DISTANCE;
+        // circle for area of influence
         ctx.beginPath();
-        ctx.arc(point.position.x, point.position.y, radius, 0, 2 * Math.PI);
-        ctx.strokeStyle = "rgba(0, 0, 255, 0.1)";
+        ctx.arc(point.position.x, point.position.y, MAX_DISTANCE, 0, 2 * Math.PI);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
         ctx.stroke();
     }
 
     const render = () => {
         ctx.clearRect(0, 0, BORDERS.maxX, BORDERS.maxY);
 
-        for (const point of points) {
-            renderPoint(point);
+        ctx.beginPath();
+        ctx.moveTo(BORDERS.minX, BORDERS.minY);
+        ctx.lineTo(BORDERS.maxX, BORDERS.minY);
+        ctx.lineTo(BORDERS.maxX, BORDERS.maxY);
+        ctx.lineTo(BORDERS.minX, BORDERS.maxY);
+        ctx.lineTo(BORDERS.minX, BORDERS.minY);
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+
+        for (const pointIndex in points) {
+            renderPoint(points[pointIndex], pointIndex);
         }
 
         requestAnimationFrame(render);

@@ -5,12 +5,12 @@ import { multiplyVector } from "./utils/vector";
 
 export const points: TPoint[] = [];
 
-const REFLECTION = 0.2;
+const REFLECTION = 0.45;
 
 // @ts-ignore
 window.points = points;
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 400; i++) {
     points.push({
         position: {
             x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
@@ -39,9 +39,26 @@ const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", 
 }
 
 let lastTime = Date.now();
+let paused: boolean = false;
+
+window.addEventListener('blur', () => {
+    paused = true;
+});
+
+window.addEventListener('focus', () => {
+    paused = false;
+    lastTime = Date.now();
+});
+
 const step = () => {
     const now = Date.now();
-    const timeDiff = now - lastTime;
+    if (paused) {
+        lastTime = now;
+        requestAnimationFrame(step);
+        return;
+    }
+
+    const timeDiff = (now - lastTime) * 10;
 
     for (const point of points) {
         for (const power of powers) {
@@ -50,16 +67,26 @@ const step = () => {
     }
 
     for (const point of points) {
-        point.position.x += point.velocity.x * timeDiff / 1000;
-        point.position.y += point.velocity.y * timeDiff / 1000;
-
         point.velocity = multiplyVector(point.velocity, 0.99);
+
+        if (Math.abs(point.velocity.x) < 0.1) {
+            point.velocity.x = 0;
+        }
+
+        if (Math.abs(point.velocity.y) < 0.1) {
+            point.velocity.y = 0;
+        }   
 
         processBorder(point, "x", "min", BORDERS.minX);
         processBorder(point, "x", "max", BORDERS.maxX);
         processBorder(point, "y", "min", BORDERS.minY);
         processBorder(point, "y", "max", BORDERS.maxY);
+
+        point.position.x += point.velocity.x * timeDiff / 1000;
+        point.position.y += point.velocity.y * timeDiff / 1000;
     }
+
+    lastTime = now;
 
     requestAnimationFrame(step);
 }
