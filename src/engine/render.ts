@@ -47,50 +47,88 @@ export const initRender = () => {
         isPressed = false;
     })
 
-    const ctx = canvas.getContext("2d");
+    const gl = canvas.getContext("webgl");
 
-    if (!ctx) {
+    if (!gl) {
         throw new Error("Can't get canvas context");
     }
 
-    const renderPoint = (point: TPoint, index: string) => {
-        ctx.beginPath();
-        ctx.arc(point.position.x, point.position.y, POINT_RADIUS, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(0, 0, 170)`;
-        if (index === "0") {
-            ctx.fillStyle = "rgb(255, 0, 255)";
-        }
-        ctx.fill();
+    function loadShader(gl, type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
 
-        // circle for area of influence
-        // ctx.beginPath();
-        // ctx.arc(point.position.x, point.position.y, MAX_DISTANCE, 0, 2 * Math.PI);
-        // ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-        // ctx.stroke();
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error('Ошибка компиляции шейдера:', gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+
+        return shader;
     }
 
+    // Вершинный шейдер
+    const vertexShaderSource = `
+        attribute vec2 a_position;
+      
+        void main() {
+          gl_Position = vec4(a_position, 0.0, 1.0);
+          gl_PointSize = 5.0; // Размер точки
+        }
+      `;
+
+    // Фрагментный шейдер
+    const fragmentShaderSource = `
+        precision mediump float;
+      
+        void main() {
+          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); // Цвет точки (синий)
+        }
+      `;
+
+    // Загружаем вершинный и фрагментный шейдеры
+    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    // Создаем программу и прикрепляем шейдеры
+    const program = gl.createProgram();
+    if (!program) {
+        throw new Error("Can't create program");
+    }
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error('Ошибка при создании программы:', gl.getProgramInfoLog(program));
+    }
+
+    // Используем программу
+    gl.useProgram(program);
+
     const render = () => {
-        ctx.clearRect(0, 0, BORDERS.maxX, BORDERS.maxY);
+        const waterPoints = points.map((point) => {
+            const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
+            const normalizedYCord = 1 - 2 * point.position.y / BORDERS.maxY;
+            return [
+                normalizedXCord,
+                normalizedYCord,
+            ]
+        }).flat();
 
-        ctx.beginPath();
-        ctx.moveTo(BORDERS.minX, BORDERS.minY);
-        ctx.lineTo(BORDERS.maxX, BORDERS.minY);
-        ctx.lineTo(BORDERS.maxX, BORDERS.maxY);
-        ctx.lineTo(BORDERS.minX, BORDERS.maxY);
-        ctx.lineTo(BORDERS.minX, BORDERS.minY);
-        ctx.strokeStyle = "black";
-        ctx.stroke();
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(waterPoints), gl.STATIC_DRAW);
 
-        for (const pointIndex in points) {
-            renderPoint(points[pointIndex], pointIndex);
-        }
+        const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+        gl.enableVertexAttribArray(positionAttributeLocation);
+        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-        if (currentMousePosition) {
-            ctx.beginPath();
-            ctx.arc(currentMousePosition.x * BORDERS.maxX, currentMousePosition.y * BORDERS.maxY, MAX_MOUSE_DISTANCE, 0, 2 * Math.PI);
-            ctx.strokeStyle = "black";
-            ctx.stroke();
-        }
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.drawArrays(gl.POINTS, 0, waterPoints.length / 2);
 
         requestAnimationFrame(render);
     }
