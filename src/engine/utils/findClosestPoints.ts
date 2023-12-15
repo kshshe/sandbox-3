@@ -5,11 +5,25 @@ import { getDistance, getVectorLength } from "./vector";
 
 export const MAX_DISTANCE = 35;
 
+const cache = new Map<TPoint, Array<{
+    point: TPoint,
+    distance: number,
+    direction: TVector,
+}>>();
+
+export const resetCache = () => {
+    cache.clear();
+}
+
 export const findClosestPoints = (point: TPoint, includeBorders = false): Array<{
     point: TPoint,
     distance: number,
     direction: TVector,
 }> => {
+    if (cache.has(point)) {
+        return cache.get(point)!;
+    }
+
     const closestPoints: Array<{
         point: TPoint,
         distance: number,
@@ -121,6 +135,8 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
             });
         }
     }
+
+    cache.set(point, closestPoints);
 
     return closestPoints;
 }

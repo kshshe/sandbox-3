@@ -1,6 +1,7 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
+import { resetCache } from "./utils/findClosestPoints";
 import { multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
 const fps = new FPS()
@@ -59,6 +60,8 @@ const step = () => {
         requestAnimationFrame(step);
         return;
     }
+
+    resetCache();
 
     const timeDiff = (now - lastTime) * 7;
 

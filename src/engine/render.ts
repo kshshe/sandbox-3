@@ -2,7 +2,7 @@ import { BORDERS, POINT_RADIUS } from "./constants";
 import { TPoint, TVector } from "./data.t";
 import { MAX_MOUSE_DISTANCE, setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
-import { MAX_DISTANCE } from "./utils/findClosestPoints";
+import { MAX_DISTANCE, findClosestPoints } from "./utils/findClosestPoints";
 
 export const initRender = () => {
     const canvas = document.createElement("canvas");
@@ -70,10 +70,13 @@ export const initRender = () => {
     // Вершинный шейдер
     const vertexShaderSource = `
         attribute vec2 a_position;
+        attribute float a_size;
+        varying float v_size;
       
         void main() {
           gl_Position = vec4(a_position, 0.0, 1.0);
-          gl_PointSize = 5.0; // Размер точки
+          gl_PointSize = a_size; 
+          v_size = a_size;
         }
       `;
 
@@ -127,6 +130,19 @@ export const initRender = () => {
 
         gl.clearColor(1.0, 1.0, 1.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        const sizes = points.map((point) => {
+            const closestPoints = findClosestPoints(point);
+            return Math.max(6, closestPoints.length)
+        });
+
+        const sizeBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizes), gl.STATIC_DRAW);
+
+        const sizeAttributeLocation = gl.getAttribLocation(program, 'a_size');
+        gl.enableVertexAttribArray(sizeAttributeLocation);
+        gl.vertexAttribPointer(sizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
 
         gl.drawArrays(gl.POINTS, 0, waterPoints.length / 2);
 
