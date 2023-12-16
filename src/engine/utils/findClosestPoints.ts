@@ -1,7 +1,7 @@
 import { BORDERS } from "../constants";
 import { TPoint, TVector } from "../data.t";
 import { points } from "../runner";
-import { getDistance, getVectorLength } from "./vector";
+import { getDistance, getMaxDistance, getVectorLength } from "./vector";
 
 export const MAX_DISTANCE = 15;
 
@@ -21,17 +21,23 @@ export const findClosestPoints = (point: TPoint, includeBorders = false, maxDist
             continue;
         }
 
-        const distance = getDistance(point.position, otherPoint.position);
-        const direction = {
-            x: otherPoint.position.x - point.position.x,
-            y: otherPoint.position.y - point.position.y,
-        };
+        const maxPossibleDistance = getMaxDistance(point.position, otherPoint.position)
+        if (maxPossibleDistance >= maxDistance) {
+            continue;
+        }
 
-        const directionLength = getVectorLength(direction);
-        direction.x /= directionLength;
-        direction.y /= directionLength;
+        const distance = getDistance(point.position, otherPoint.position);
 
         if (distance < maxDistance) {
+            const direction = {
+                x: otherPoint.position.x - point.position.x,
+                y: otherPoint.position.y - point.position.y,
+            };
+    
+            const directionLength = getVectorLength(direction);
+            direction.x /= directionLength;
+            direction.y /= directionLength;
+    
             closestPoints.push({
                 point: otherPoint,
                 distance,

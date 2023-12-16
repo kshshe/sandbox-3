@@ -18,3 +18,7 @@ export const getDistance = (vectorA: TVector, vectorB: TVector): number => {
     const diffVector = sumVectors(vectorA, multiplyVector(vectorB, -1));
     return getVectorLength(diffVector);
 }
+
+export const getMaxDistance = (vectorA: TVector, vectorB: TVector): number => {
+    return Math.max(Math.abs(vectorA.x - vectorB.x), Math.abs(vectorA.y - vectorB.y));
+}
