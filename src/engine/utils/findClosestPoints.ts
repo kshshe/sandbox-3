@@ -5,7 +5,7 @@ import { getDistance, getVectorLength } from "./vector";
 
 export const MAX_DISTANCE = 15;
 
-export const findClosestPoints = (point: TPoint, includeBorders = false): Array<{
+export const findClosestPoints = (point: TPoint, includeBorders = false, maxDistance = MAX_DISTANCE): Array<{
     point: TPoint,
     distance: number,
     direction: TVector,
@@ -31,7 +31,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
         direction.x /= directionLength;
         direction.y /= directionLength;
 
-        if (distance < MAX_DISTANCE) {
+        if (distance < maxDistance) {
             closestPoints.push({
                 point: otherPoint,
                 distance,
@@ -41,7 +41,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
     }
 
     if (includeBorders) {
-        if (point.position.x - BORDERS.minX <= MAX_DISTANCE) {
+        if (point.position.x - BORDERS.minX <= maxDistance) {
             closestPoints.push({
                 point: {
                     position: {
@@ -66,7 +66,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
             });
         }
 
-        if (BORDERS.maxX - point.position.x <= MAX_DISTANCE) {
+        if (BORDERS.maxX - point.position.x <= maxDistance) {
             closestPoints.push({
                 point: {
                     position: {
@@ -91,7 +91,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
             });
         }
 
-        if (point.position.y - BORDERS.minY <= MAX_DISTANCE) {
+        if (point.position.y - BORDERS.minY <= maxDistance) {
             closestPoints.push({
                 point: {
                     position: {
@@ -116,7 +116,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false): Array<
             });
         }
 
-        if (BORDERS.maxY - point.position.y <= MAX_DISTANCE) {
+        if (BORDERS.maxY - point.position.y <= maxDistance) {
             closestPoints.push({
                 point: {
                     position: {
