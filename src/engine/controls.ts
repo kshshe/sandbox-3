@@ -3,5 +3,5 @@ export const initControl = (selector: string, callback: (e: Event) => void) => {
     if (!element) {
         return;
     }
-    element.addEventListener('click', callback);
+    element.addEventListener('input', callback);
 }

@@ -1,4 +1,5 @@
 import { BORDERS, POINT_RADIUS } from "./constants";
+import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
 import { multiplyVector } from "./utils/vector";
@@ -57,6 +58,12 @@ window.addEventListener('focus', () => {
     lastTime = Date.now();
 });
 
+let speedMultiplier = 7;
+
+initControl('input#speed', (e) => {
+    speedMultiplier = parseInt((e.target as HTMLInputElement).value) / 10
+})
+
 const step = () => {
     const now = Date.now();
     if (paused) {
@@ -65,7 +72,7 @@ const step = () => {
         return;
     }
 
-    const timeDiff = (now - lastTime) * 7;
+    const timeDiff = (now - lastTime) * speedMultiplier;
 
     for (const point of points) {
         point.acceleration.x = 0;

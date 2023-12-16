@@ -18,7 +18,7 @@ const getAntiForceValue = (distance: number) => {
 }
 
 export const densityProcessor: TPowerProcessor = (point) => {
-    const closestPoints = findClosestPoints(point);
+    const closestPoints = findClosestPoints(point, true);
     const pointsCount = closestPoints.length;
 
     if (pointsCount === 0) {
