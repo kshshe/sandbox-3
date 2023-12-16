@@ -22,7 +22,7 @@ const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-window.document.body.addEventListener('touchstart', async () => {
+document.querySelector('input#gravity')?.addEventListener('click', async () => {
     if (
         DeviceMotionEvent &&
         // @ts-ignore
