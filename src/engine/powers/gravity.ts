@@ -29,8 +29,12 @@ window.document.body.addEventListener('touchstart', () => {
         typeof DeviceMotionEvent.requestPermission === "function"
     ) {
         console.log("requesting permission")
-        // @ts-ignore
-        DeviceMotionEvent.requestPermission();
+        try {
+            // @ts-ignore
+            DeviceMotionEvent.requestPermission();
+        } catch (e) {
+            console.log(e.message || e.toString())
+        }
     } else {
         console.log("no permission function")
     }
