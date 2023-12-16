@@ -31,5 +31,7 @@ if (
 window.addEventListener("devicemotion", handleMotion);
 
 export const gravityProcessor: TPowerProcessor = (point) => {
-    point.acceleration.y += GRAVITY_ACCELERATION
+    const { x, y } = getAccelerometerDirection()
+    point.acceleration.y += y
+    point.acceleration.x += x
 }
