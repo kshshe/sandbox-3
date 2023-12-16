@@ -4,7 +4,7 @@ import { TVector } from "./data.t";
 import { setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
 
-let customSizes = true;
+let customSizes = false;
 
 initControl('input#custom-sizes', (e) => {
     const input = e.target as HTMLInputElement;
