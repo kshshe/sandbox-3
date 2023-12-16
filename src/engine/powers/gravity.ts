@@ -9,11 +9,6 @@ let currentAcceleration: TVector = {
 }
 
 function handleMotion(event) {
-    console.log({
-        x: event.accelerationIncludingGravity.x,
-        y: event.accelerationIncludingGravity.y,
-        z: event.accelerationIncludingGravity.z
-    })
     currentAcceleration.x = +event.accelerationIncludingGravity.x || 0;
     currentAcceleration.y = +event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
 }
@@ -28,15 +23,12 @@ document.querySelector('input#gravity')?.addEventListener('click', async () => {
         // @ts-ignore
         typeof DeviceMotionEvent.requestPermission === "function"
     ) {
-        console.log("requesting permission")
         try {
             // @ts-ignore
             await DeviceMotionEvent.requestPermission();
         } catch (e) {
             console.log(e.message || e.toString())
         }
-    } else {
-        console.log("no permission function")
     }
 })
 
