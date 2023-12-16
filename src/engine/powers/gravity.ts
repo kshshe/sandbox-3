@@ -10,7 +10,7 @@ let currentAcceleration: TVector = {
 
 function handleMotion(event) {
     currentAcceleration.x = +event.accelerationIncludingGravity.x || 0;
-    currentAcceleration.y = +event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
+    currentAcceleration.y = -event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
 }
 
 const getAccelerometerDirection = (): TVector => {
