@@ -13,23 +13,36 @@ const REFLECTION = 0.45;
 // @ts-ignore
 window.points = points;
 
+const getRandomPoint = (): TPoint => ({
+    position: {
+        x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
+        y: Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY,
+    },
+    velocity: {
+        x: 0,
+        y: 0,
+    },
+    acceleration: {
+        x: 0,
+        y: 0,
+    },
+    temporaryData: {},
+});
+
 for (let i = 0; i < 1000; i++) {
-    points.push({
-        position: {
-            x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
-            y: Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY,
-        },
-        velocity: {
-            x: 0,
-            y: 0,
-        },
-        acceleration: {
-            x: 0,
-            y: 0,
-        },
-        temporaryData: {},
-    });
+    points.push(getRandomPoint());
 }
+
+initControl('input#count', (e) => {
+    const newCount = parseInt((e.target as HTMLInputElement).value);
+    if (newCount > points.length) {
+        for (let i = 0; i < newCount - points.length; i++) {
+            points.push(getRandomPoint());
+        }
+    } else {
+        points.splice(newCount, points.length - newCount);
+    }
+});
 
 const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", borderValue: number) => {
     if (minOrMax === "min") {
