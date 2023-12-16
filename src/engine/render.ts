@@ -144,7 +144,7 @@ export const initRender = () => {
                 return 2;
             }
             const closestPoints = point.temporaryData.closestPoints as unknown[]
-            return Math.max(6, closestPoints?.length || 0)
+            return Math.max(6, Math.min(closestPoints?.length || 0, 20))
         });
 
         const sizeBuffer = gl.createBuffer();
