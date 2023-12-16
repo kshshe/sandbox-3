@@ -32,13 +32,14 @@ export const densityProcessor: TPowerProcessor = (point) => {
 
     for (const closestPoint of closestPoints) {
         const { distance, direction, point: otherPoint } = closestPoint;
-        if (distance === 0) {
-            debugger
-            continue;
-        }
 
         const forceValue = -getForceValue(distance);
         const antiForceValue = getAntiForceValue(distance);
+        
+        if (distance === 0) {
+            direction.x = Math.random() - 0.5;
+            direction.y = Math.random() - 0.5;
+        }
 
         const xAccelerationChange = (direction.x * forceValue * BASE_FORCE);
         const yAccelerationChange = (direction.y * forceValue * BASE_FORCE);
