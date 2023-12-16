@@ -9,14 +9,18 @@ let currentAcceleration: TVector = {
 }
 
 function handleMotion(event) {
-    currentAcceleration.x = event.accelerationIncludingGravity.x || 0;
-    currentAcceleration.y = event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
+    console.log({
+        x: event.accelerationIncludingGravity.x,
+        y: event.accelerationIncludingGravity.y,
+        z: event.accelerationIncludingGravity.z
+    })
+    currentAcceleration.x = +event.accelerationIncludingGravity.x || 0;
+    currentAcceleration.y = +event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
 }
 
 const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
-
 
 window.document.body.addEventListener('touchstart', () => {
     if (
@@ -24,8 +28,11 @@ window.document.body.addEventListener('touchstart', () => {
         // @ts-ignore
         typeof DeviceMotionEvent.requestPermission === "function"
     ) {
+        console.log("requesting permission")
         // @ts-ignore
         DeviceMotionEvent.requestPermission();
+    } else {
+        console.log("no permission function")
     }
 })
 
