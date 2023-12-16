@@ -22,7 +22,7 @@ const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-window.document.body.addEventListener('touchstart', () => {
+window.document.body.addEventListener('touchstart', async () => {
     if (
         DeviceMotionEvent &&
         // @ts-ignore
