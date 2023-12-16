@@ -4,7 +4,7 @@ import { TVector } from "../data.t";
 
 const BASE_FORCE = 40;
 const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 40;
-const VISCOSITY = 0.05;
+const VISCOSITY = 0.5;
 
 const getForceValue = (distance: number) => {
     const normalizedDistance = distance / MAX_DISTANCE;
@@ -47,8 +47,8 @@ export const densityProcessor: TPowerProcessor = (point) => {
         const xAntiAccelerationChange = (direction.x * antiForceValue * BASE_ANTI_DENSITY_FORCE);
         const yAntiAccelerationChange = (direction.y * antiForceValue * BASE_ANTI_DENSITY_FORCE);
 
-        const xViscosityChange = (otherPoint.velocity.x - point.velocity.x) * VISCOSITY;
-        const yViscosityChange = (otherPoint.velocity.y - point.velocity.y) * VISCOSITY;
+        const xViscosityChange = (otherPoint.velocity.x - point.velocity.x) * -VISCOSITY * forceValue;
+        const yViscosityChange = (otherPoint.velocity.y - point.velocity.y) * -VISCOSITY * forceValue;
 
         totalForce.x += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
         totalForce.y += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;

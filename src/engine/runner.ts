@@ -46,13 +46,13 @@ initControl('input#count', (e) => {
 
 const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", borderValue: number) => {
     if (minOrMax === "min") {
-        if (point.position[axis] <= borderValue + POINT_RADIUS) {
+        if (point.position[axis] <= borderValue + POINT_RADIUS - 1) {
             point.position[axis] = borderValue + POINT_RADIUS;
             point.velocity[axis] *= -REFLECTION;
         }
     }
     if (minOrMax === "max") {
-        if (point.position[axis] >= borderValue - POINT_RADIUS) {
+        if (point.position[axis] >= borderValue - POINT_RADIUS + 1) {
             point.position[axis] = borderValue - POINT_RADIUS;
             point.velocity[axis] *= -REFLECTION;
         }
