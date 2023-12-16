@@ -31,7 +31,7 @@ window.document.body.addEventListener('touchstart', () => {
         console.log("requesting permission")
         try {
             // @ts-ignore
-            DeviceMotionEvent.requestPermission();
+            await DeviceMotionEvent.requestPermission();
         } catch (e) {
             console.log(e.message || e.toString())
         }
@@ -40,7 +40,7 @@ window.document.body.addEventListener('touchstart', () => {
     }
 })
 
-window.addEventListener("devicemotion", handleMotion);
+window.addEventListener("devicemotion", handleMotion, true);
 
 export const gravityProcessor: TPowerProcessor = (point) => {
     const { x, y } = getAccelerometerDirection()
