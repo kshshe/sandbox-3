@@ -18,15 +18,16 @@ const getAccelerometerDirection = (): TVector => {
 }
 
 
-// Request permission for iOS 13+ devices
-if (
-    DeviceMotionEvent &&
-    // @ts-ignore
-    typeof DeviceMotionEvent.requestPermission === "function"
-) {
-    // @ts-ignore
-    DeviceMotionEvent.requestPermission();
-}
+window.document.body.addEventListener('touchstart', () => {
+    if (
+        DeviceMotionEvent &&
+        // @ts-ignore
+        typeof DeviceMotionEvent.requestPermission === "function"
+    ) {
+        // @ts-ignore
+        DeviceMotionEvent.requestPermission();
+    }
+})
 
 window.addEventListener("devicemotion", handleMotion);
 
