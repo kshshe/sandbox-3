@@ -104,7 +104,7 @@ initControl('input#speed', (e) => {
 const step = () => {
     const now = Date.now();
     if (paused) {
-        lastTime = now;
+        lastTime = now - 10;
         requestAnimationFrame(step);
         return;
     }
@@ -164,7 +164,7 @@ const updateStatus = () => {
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Points: ${points.length}`,
-        process.env.VERCEL_GIT_COMMIT_MESSAGE,
+        process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
     ].filter(Boolean).join('<br />');
     statusBlock.innerHTML = text;
 }
