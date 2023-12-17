@@ -29,7 +29,7 @@ export const mouseProcessor: TPowerProcessor = (point) => {
         y: mousePosition.y - point.position.y,
     };
 
-    const length = getDistance({ x: 0, y: 0 }, direction);
+    const length = getDistance({ x: 0, y: 0 }, direction) + 1;
     const normalizedDirection = {
         x: direction.x / length,
         y: direction.y / length,

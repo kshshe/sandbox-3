@@ -120,6 +120,11 @@ const step = () => {
     }
 
     for (const point of points) {
+        if (isNaN(point.velocity.x) || isNaN(point.velocity.y)) {
+            console.log(point)
+            debugger
+        }
+
         point.velocity = multiplyVector(point.velocity, 0.9999);
 
         point.velocity.x += point.acceleration.x * timeDiff / 1000;

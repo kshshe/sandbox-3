@@ -9,14 +9,13 @@ import { collisionProcessor } from "./collision";
 const availablePowers: Record<string, TPowerProcessor> = {
     gravity: gravityProcessor,
     density: densityProcessor,
+    collision: collisionProcessor,
 };
 
 export const powers: Array<TPowerProcessor> = [
-    // gravityProcessor,
     densityProcessor,
     randomnessProcessor,
     mouseProcessor,
-    // collisionProcessor,
 ];
 
 const listPowers = () => {
@@ -42,6 +41,16 @@ initControl('input#density', (e) => {
         powers.push(availablePowers.density);
     } else {
         powers.splice(powers.indexOf(availablePowers.density), 1);
+    }
+    listPowers();
+})
+
+initControl('input#collision', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.checked) {
+        powers.push(availablePowers.collision);
+    } else {
+        powers.splice(powers.indexOf(availablePowers.collision), 1);
     }
     listPowers();
 })
