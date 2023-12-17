@@ -3,10 +3,13 @@ import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
 import { GPU } from '../../gpu.d'
 
-console.log('GPU', window.GPU)
+// @ts-ignore
+const GPUClass = (window.GPU?.GPU || window.GPU);
+
+console.log({ GPUClass })
 
 // @ts-ignore
-const gpu = new window.GPU.GPU() as GPU;
+const gpu = new GPUClass() as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
         function getForceValue(distance: number) {
