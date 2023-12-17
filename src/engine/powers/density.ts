@@ -53,8 +53,8 @@ export const densityProcessor: TPowerProcessor = (point) => {
         totalForce.x += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
         totalForce.y += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
 
-        otherPoint.acceleration.x -= xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
-        otherPoint.acceleration.y -= yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
+        // otherPoint.acceleration.x -= xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
+        // otherPoint.acceleration.y -= yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
     }
 
     point.acceleration.x += totalForce.x;
