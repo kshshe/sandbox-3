@@ -121,8 +121,10 @@ const step = () => {
 
     for (const point of points) {
         if (isNaN(point.velocity.x) || isNaN(point.velocity.y)) {
-            console.log(point)
-            debugger
+            // console.log(point)
+            // debugger
+            point.velocity.x = point.velocity.x || 0;
+            point.velocity.y = point.velocity.y || 0;
         }
 
         point.velocity = multiplyVector(point.velocity, 0.9999);
