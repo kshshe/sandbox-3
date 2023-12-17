@@ -3,6 +3,8 @@ import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
 import { GPU } from '../../gpu.d'
 
+console.log('GPU', window.GPU)
+
 // @ts-ignore
 const gpu = new window.GPU.GPU() as GPU;
 const getDencityAcceleration = gpu
