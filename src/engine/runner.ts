@@ -2,16 +2,29 @@ import { BORDERS, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
-import { multiplyVector } from "./utils/vector";
+import { getVectorLength, multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
 const fps = new FPS()
 
 export const points: TPoint[] = [];
 
-const REFLECTION = 0.45;
+declare global {
+    interface Window {
+        getAverageSpeed: () => number;
+        points: TPoint[];
+    }
+}
 
-// @ts-ignore
 window.points = points;
+window.getAverageSpeed = () => {
+    let sum = 0;
+    for (const point of points) {
+        sum += getVectorLength(point.velocity);
+    }
+    return sum / points.length;
+}
+
+const REFLECTION = 0.45;
 
 const getRandomPoint = (): TPoint => ({
     position: {
@@ -45,16 +58,27 @@ initControl('input#count', (e) => {
 });
 
 const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", borderValue: number) => {
+    const axisVelocity = point.velocity[axis];
+    const isSmall = Math.abs(axisVelocity) < 5;
     if (minOrMax === "min") {
         if (point.position[axis] <= borderValue + POINT_RADIUS - 1) {
             point.position[axis] = borderValue + POINT_RADIUS;
+            if (isSmall) {
+                point.velocity[axis] = 0;
+                return;
+            }
             point.velocity[axis] *= -REFLECTION;
+            return;
         }
     }
     if (minOrMax === "max") {
         if (point.position[axis] >= borderValue - POINT_RADIUS + 1) {
             point.position[axis] = borderValue - POINT_RADIUS;
             point.velocity[axis] *= -REFLECTION;
+            if (isSmall) {
+                point.velocity[axis] = 0;
+                return;
+            }
         }
     }
 }
@@ -107,15 +131,15 @@ const step = () => {
 
         if (Math.abs(point.velocity.y) < 0.1) {
             point.velocity.y = 0;
-        }   
+        }
+
+        point.position.x += point.velocity.x * timeDiff / 1000;
+        point.position.y += point.velocity.y * timeDiff / 1000;
 
         processBorder(point, "x", "min", BORDERS.minX);
         processBorder(point, "x", "max", BORDERS.maxX);
         processBorder(point, "y", "min", BORDERS.minY);
         processBorder(point, "y", "max", BORDERS.maxY);
-
-        point.position.x += point.velocity.x * timeDiff / 1000;
-        point.position.y += point.velocity.y * timeDiff / 1000;
     }
 
     lastTime = now;
@@ -126,3 +150,15 @@ const step = () => {
 export const run = () => {
     step();
 }
+
+const statusBlock = document.querySelector('.status') as HTMLDivElement;
+
+const updateStatus = () => {
+    const text = [
+        `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
+        `Points: ${points.length}`,
+    ].filter(Boolean).join('<br />');
+    statusBlock.innerHTML = text;
+}
+
+setInterval(updateStatus, 1000);
