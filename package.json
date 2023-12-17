@@ -19,11 +19,11 @@
   "homepage": "https://github.com/kshshe/sandbox-3#readme",
   "devDependencies": {
     "@parcel/transformer-sass": "^2.10.3",
-    "parcel": "^2.10.3"
+    "parcel": "^2.10.3",
+    "gpu.js": "^2.16.0"
   },
   "dependencies": {
     "@types/node": "^20.10.4",
-    "gpu.js": "^2.16.0",
     "yy-fps": "^2.0.1"
   }
 }
