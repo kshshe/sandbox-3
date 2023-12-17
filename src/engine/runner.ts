@@ -114,9 +114,22 @@ const step = () => {
     for (const point of points) {
         point.acceleration.x = 0;
         point.acceleration.y = 0;
+
         for (const power of powers) {
+            const isParallel = !!power.isParallel;
+            if (isParallel) {
+                continue;
+            }
             power(point, timeDiff);
         }
+    }
+
+    for (const power of powers) {
+        const isParallel = !!power.isParallel;
+        if (!isParallel) {
+            continue;
+        }
+        power(points);
     }
 
     for (const point of points) {
