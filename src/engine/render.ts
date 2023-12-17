@@ -54,6 +54,41 @@ export const initRender = () => {
         setMousePosition(null);
         isPressed = false;
     })
+    
+    canvas.addEventListener("touchmove", (event) => {
+        const touch = event.touches[0];
+        const pixelX = touch.clientX;
+        const pixelY = touch.clientY;
+
+        currentMousePosition = {
+            x: pixelX,
+            y: pixelY,
+        };
+        if (isPressed) {
+            setMousePosition(currentMousePosition);
+        }
+    });
+
+    canvas.addEventListener("touchend", () => {
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
+    });
+
+    canvas.addEventListener("touchcancel", () => {
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
+    });
+
+    canvas.addEventListener("touchstart", (event) => {
+        const touch = event.touches[0];
+        const pixelX = touch.clientX;
+        const pixelY = touch.clientY;
+
+        setMousePosition({ x: pixelX, y: pixelY }, 1);
+        isPressed = true;
+    });
 
     const gl = canvas.getContext("webgl");
 
