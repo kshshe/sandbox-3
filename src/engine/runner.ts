@@ -101,6 +101,8 @@ initControl('input#speed', (e) => {
     speedMultiplier = parseInt((e.target as HTMLInputElement).value) / 10
 })
 
+const times: number[] = [];
+
 const step = () => {
     const now = Date.now();
     if (paused) {
@@ -109,6 +111,7 @@ const step = () => {
         return;
     }
 
+    const startTime = performance.now();
     const timeDiff = (now - lastTime) * speedMultiplier;
 
     for (const point of points) {
@@ -164,6 +167,14 @@ const step = () => {
 
     lastTime = now;
     fps.frame()
+
+    const endTime = performance.now();
+    times.push(endTime - startTime);
+
+    if (times.length > 100) {
+        times.shift();
+    }
+
     requestAnimationFrame(step);
 }
 
@@ -178,6 +189,7 @@ const updateStatus = () => {
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Points: ${points.length}`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE ? `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}` : 'localhost',
+        `AVG time: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}ms`,
     ].filter(Boolean).join('<br />');
     statusBlock.innerHTML = text;
 }
