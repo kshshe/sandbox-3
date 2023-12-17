@@ -188,7 +188,7 @@ const updateStatus = () => {
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Points: ${points.length}`,
-        process.env.VERCEL_GIT_COMMIT_MESSAGE ? `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}` : 'localhost',
+        process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
         `AVG time: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}ms`,
     ].filter(Boolean).join('<br />');
     statusBlock.innerHTML = text;
