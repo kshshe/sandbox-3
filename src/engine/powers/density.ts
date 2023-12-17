@@ -3,7 +3,7 @@ import { findClosestPoints, MAX_DISTANCE } from "../utils/findClosestPoints";
 import { TVector } from "../data.t";
 
 const BASE_FORCE = 40;
-const BASE_ANTI_DENSITY_FORCE = BASE_FORCE / 40;
+const BASE_ANTI_DENSITY_FORCE = 1;
 const VISCOSITY = 0.5;
 
 const getForceValue = (distance: number) => {
