@@ -1,9 +1,10 @@
-import { GPU } from 'gpu.js';
-
 import { TPowerProcessorParallel } from "./powers";
 import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
-const gpu = new GPU();
+import { GPU } from '../../gpu.d'
+
+// @ts-ignore
+const gpu = new window.GPU.GPU() as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
         function getForceValue(distance: number) {
