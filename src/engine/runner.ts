@@ -83,7 +83,7 @@ const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", 
     }
 }
 
-let lastTime = Date.now();
+let lastTime: number | null = null;
 let paused: boolean = false;
 
 if (location.hostname !== 'localhost') {
@@ -114,6 +114,9 @@ const step = () => {
     }
 
     const startTime = performance.now();
+    if (!lastTime) {
+        lastTime = now - 10;
+    }
     const timeDiff = (now - lastTime) * speedMultiplier;
 
     for (const point of points) {
