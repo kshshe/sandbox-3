@@ -13,14 +13,14 @@ const gpu = new GPUClass() as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
         function getForceValue(distance: number) {
-            const MAX_DISTANCE = 15;
+            const MAX_DISTANCE = 150;
             const normalizedDistance = distance / MAX_DISTANCE;
             const result = 1 - Math.abs(normalizedDistance);
-            return Math.pow(result, 3);
+            return Math.pow(result, 15);
         }
         
         function getAntiForceValue(distance: number) {
-            const MAX_DISTANCE = 15;
+            const MAX_DISTANCE = 150;
             const normalizedDistance = distance / MAX_DISTANCE;
             return Math.pow(Math.abs(normalizedDistance), 2);
         }
@@ -29,9 +29,9 @@ const getDencityAcceleration = gpu
             return Math.sqrt(x * x + y * y);
         }
 
-        const MAX_DISTANCE = 15;
-        const BASE_FORCE = 40;
-        const BASE_ANTI_DENSITY_FORCE = 1;
+        const MAX_DISTANCE = 150;
+        const BASE_FORCE = 15;
+        const BASE_ANTI_DENSITY_FORCE = 0;
         const VISCOSITY = 0.5;
 
         const pointIndex = this.thread.x;
@@ -44,6 +44,8 @@ const getDencityAcceleration = gpu
         let totalAccelerationX = 0;
         let totalAccelerationY = 0;
 
+        let closestPointsCount = 0;
+
         const pointsMaxIndex = (this.constants.pointsCount as number) * 4;
         for (let i = 0; i < pointsMaxIndex; i += 4) {
             const x = a[i];
@@ -55,6 +57,7 @@ const getDencityAcceleration = gpu
             let distance = getVectorLength(x - pointPositionX, y - pointPositionY)
 
             if (distance <= MAX_DISTANCE) {
+                closestPointsCount++;
                 let directionX = x - pointPositionX;
                 let directionY = y - pointPositionY;
 
@@ -87,6 +90,7 @@ const getDencityAcceleration = gpu
         return [
             totalAccelerationX,
             totalAccelerationY,
+            closestPointsCount,
         ];
     })
     .setOutput([1000])
@@ -113,10 +117,11 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     const kernelResult = getDencityAcceleration(pointsToFlatArray(points));
 
     for (const index in points) {
-        const pointAcceleration = kernelResult[index] as [number, number];
+        const pointAcceleration = kernelResult[index] as [number, number, number];
         const point = points[index];
         point.acceleration.x += pointAcceleration[0];
         point.acceleration.y += pointAcceleration[1];
+        point.temporaryData.closestPointsCount = pointAcceleration[2];
     }
 }
 

@@ -149,6 +149,7 @@ export const findClosestPoints = (point: TPoint, includeBorders = false, maxDist
     }
 
     point.temporaryData.closestPoints = closestPoints;
+    point.temporaryData.closestPointsCount = closestPoints.length;
 
     return closestPoints;
 }

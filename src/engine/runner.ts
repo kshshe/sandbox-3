@@ -184,10 +184,19 @@ export const run = () => {
 
 const statusBlock = document.querySelector('.status') as HTMLDivElement;
 
+const getUniquePositionsCount = () => {
+    const positions = new Set<string>();
+    for (const point of points) {
+        positions.add(`${point.position.x.toFixed(3)}:${point.position.y.toFixed(3)}`);
+    }
+    return positions.size;
+}
+
 const updateStatus = () => {
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Points: ${points.length}`,
+        `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
         `AVG time: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}ms`,
     ].filter(Boolean).join('<br />');
