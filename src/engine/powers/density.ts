@@ -46,48 +46,45 @@ const getDencityAcceleration = gpu
         let closestPointsCount = 0;
 
         for (let i = 0; i < pointsCount; i += 1) {
-            if (pointIndex === i) {
-                continue;
-            }
-
             const otherPointStartIndex = 4 * i + pointsGlobalStartIndex;
+            if (pointIndex !== i) {
+                const x = a[otherPointStartIndex];
+                const y = a[otherPointStartIndex + 1];
 
-            const x = a[otherPointStartIndex];
-            const y = a[otherPointStartIndex + 1];
+                const otherPointVelocityX = a[otherPointStartIndex + 2];
+                const otherPointVelocityY = a[otherPointStartIndex + 3];
 
-            const otherPointVelocityX = a[otherPointStartIndex + 2];
-            const otherPointVelocityY = a[otherPointStartIndex + 3];
+                let distance = getVectorLength(x - pointPositionX, y - pointPositionY)
 
-            let distance = getVectorLength(x - pointPositionX, y - pointPositionY)
+                if (distance <= maxDistance) {
+                    closestPointsCount++;
+                    let directionX = x - pointPositionX;
+                    let directionY = y - pointPositionY;
 
-            if (distance <= maxDistance) {
-                closestPointsCount++;
-                let directionX = x - pointPositionX;
-                let directionY = y - pointPositionY;
+                    if (distance === 0) {
+                        directionX = 3 * (Math.random() - 0.5);
+                        directionY = 3 * (Math.random() - 0.5);
+                        distance = 1;
+                    }
 
-                if (distance === 0) {
-                    directionX = 3 * (Math.random() - 0.5);
-                    directionY = 3 * (Math.random() - 0.5);
-                    distance = 1;
+                    const normalizedDirectionX = directionX / distance;
+                    const normalizedDirectionY = directionY / distance;
+
+                    const forceValue = -getForceValue(distance / maxDistance);
+                    const antiForceValue = getAntiForceValue(distance / maxDistance);
+
+                    const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
+                    const yAccelerationChange = normalizedDirectionY * forceValue * baseForce;
+
+                    const xAntiAccelerationChange = normalizedDirectionX * antiForceValue * baseAntiDensityForce;
+                    const yAntiAccelerationChange = normalizedDirectionY * antiForceValue * baseAntiDensityForce;
+
+                    const xViscosityChange = (otherPointVelocityX - pointVelocityX) * -viscosity * forceValue;
+                    const yViscosityChange = (otherPointVelocityY - pointVelocityY) * -viscosity * forceValue;
+
+                    totalAccelerationX += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
+                    totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
                 }
-
-                const normalizedDirectionX = directionX / distance;
-                const normalizedDirectionY = directionY / distance;
-
-                const forceValue = -getForceValue(distance / maxDistance);
-                const antiForceValue = getAntiForceValue(distance / maxDistance);
-
-                const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
-                const yAccelerationChange = normalizedDirectionY * forceValue * baseForce;
-
-                const xAntiAccelerationChange = normalizedDirectionX * antiForceValue * baseAntiDensityForce;
-                const yAntiAccelerationChange = normalizedDirectionY * antiForceValue * baseAntiDensityForce;
-
-                const xViscosityChange = (otherPointVelocityX - pointVelocityX) * -viscosity * forceValue;
-                const yViscosityChange = (otherPointVelocityY - pointVelocityY) * -viscosity * forceValue;
-
-                totalAccelerationX += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
-                totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
             }
         }
 
