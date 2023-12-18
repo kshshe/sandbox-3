@@ -13,14 +13,14 @@ const gpu = new GPUClass() as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
         function getForceValue(distance: number) {
-            const MAX_DISTANCE = 150;
+            const MAX_DISTANCE = 40;
             const normalizedDistance = distance / MAX_DISTANCE;
             const result = 1 - Math.abs(normalizedDistance);
             return Math.pow(result, 3);
         }
         
         function getAntiForceValue(distance: number) {
-            const MAX_DISTANCE = 150;
+            const MAX_DISTANCE = 40;
             const normalizedDistance = distance / MAX_DISTANCE;
             return Math.pow(Math.abs(normalizedDistance), 2);
         }
@@ -29,7 +29,7 @@ const getDencityAcceleration = gpu
             return Math.sqrt(x * x + y * y);
         }
 
-        const MAX_DISTANCE = 15;
+        const MAX_DISTANCE = 40;
         const BASE_FORCE = 40;
         const BASE_ANTI_DENSITY_FORCE = 1;
         const VISCOSITY = 0.5;

@@ -145,7 +145,7 @@ const step = () => {
             point.velocity.y = point.velocity.y || 0;
         }
 
-        point.velocity = multiplyVector(point.velocity, 0.9999);
+        point.velocity = multiplyVector(point.velocity, Math.pow(0.999, timeDiff / 1000));
 
         point.velocity.x += point.acceleration.x * timeDiff / 1000;
         point.velocity.y += point.acceleration.y * timeDiff / 1000;
@@ -197,6 +197,7 @@ const getUniquePositionsCount = () => {
 const updateStatus = () => {
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
+        `Max speed: ${points.reduce((a, b) => Math.max(a, getVectorLength(b.velocity)), 0).toFixed(2)}`,
         `Points: ${points.length}`,
         `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
