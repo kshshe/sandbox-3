@@ -29,8 +29,8 @@ const getDencityAcceleration = gpu
             return Math.sqrt(x * x + y * y);
         }
 
-        const MAX_DISTANCE = 40;
-        const BASE_FORCE = 15;
+        const MAX_DISTANCE = 15;
+        const BASE_FORCE = 40;
         const BASE_ANTI_DENSITY_FORCE = 1;
         const VISCOSITY = 0.5;
 
