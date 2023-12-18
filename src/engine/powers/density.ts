@@ -32,7 +32,7 @@ const getDencityAcceleration = gpu
         const MAX_DISTANCE = 40;
         const BASE_FORCE = 40;
         const BASE_ANTI_DENSITY_FORCE = 1;
-        const VISCOSITY = 0.5;
+        const VISCOSITY = 2;
 
         const pointIndex = this.thread.x;
         const pointStartIndex = pointIndex * 4;
