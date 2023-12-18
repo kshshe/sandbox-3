@@ -105,6 +105,8 @@ initControl('input#speed', (e) => {
 
 const times: number[] = [];
 
+const MAX_SPEED = 300;
+
 const step = () => {
     const now = Date.now();
     if (paused) {
@@ -146,6 +148,14 @@ const step = () => {
             // debugger
             point.velocity.x = point.velocity.x || 0;
             point.velocity.y = point.velocity.y || 0;
+        }
+
+        if (point.velocity.x > MAX_SPEED) {
+            point.velocity.x = MAX_SPEED;
+        }
+
+        if (point.velocity.y > MAX_SPEED) {
+            point.velocity.y = MAX_SPEED;
         }
 
         point.velocity = multiplyVector(point.velocity, Math.pow(0.999, timeDiff / 1000));
