@@ -150,18 +150,18 @@ const step = () => {
             point.velocity.y = point.velocity.y || 0;
         }
 
-        if (point.velocity.x > MAX_SPEED) {
-            point.velocity.x = MAX_SPEED;
-        }
-
-        if (point.velocity.y > MAX_SPEED) {
-            point.velocity.y = MAX_SPEED;
-        }
-
         point.velocity = multiplyVector(point.velocity, Math.pow(0.999, timeDiff / 1000));
 
         point.velocity.x += point.acceleration.x * timeDiff / 1000;
         point.velocity.y += point.acceleration.y * timeDiff / 1000;
+
+        if (Math.abs(point.velocity.x) > MAX_SPEED) {
+            point.velocity.x = MAX_SPEED;
+        }
+
+        if (Math.abs(point.velocity.y) > MAX_SPEED) {
+            point.velocity.y = MAX_SPEED;
+        }
 
         if (Math.abs(point.velocity.x) < 0.1) {
             point.velocity.x = 0;

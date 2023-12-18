@@ -106,7 +106,7 @@ const constants = {
     maxDistance: 40,
     baseForce: 40,
     baseAntiDensityForce: 1,
-    viscosity: 0.5,
+    viscosity: 0.7,
 }
 
 const inputModifiers = {
