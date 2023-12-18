@@ -3,6 +3,7 @@ import { initControl } from "./controls";
 import { TVector } from "./data.t";
 import { setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
+import { getVectorLength } from "./utils/vector";
 
 let customSizes = false;
 
@@ -114,21 +115,25 @@ export const initRender = () => {
     const vertexShaderSource = `
         attribute vec2 a_position;
         attribute float a_size;
+        attribute vec3 a_color;
         varying float v_size;
+        varying vec3 v_color;
       
         void main() {
           gl_Position = vec4(a_position, 0.0, 1.0);
           gl_PointSize = a_size; 
           v_size = a_size;
+          v_color = a_color;
         }
       `;
 
     // Фрагментный шейдер
     const fragmentShaderSource = `
         precision mediump float;
+        varying vec3 v_color;
       
         void main() {
-          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); // Цвет точки (синий)
+          gl_FragColor = vec4(v_color, 1.0);
         }
       `;
 
@@ -181,6 +186,25 @@ export const initRender = () => {
             const closestPointsCount = point.temporaryData.closestPointsCount / 20
             return Math.max(6, Math.min(closestPointsCount || 0, 20))
         });
+
+        const colors = points.map((point) => {
+            const velocity = getVectorLength(point.velocity);
+            const normalizedVelocity = velocity / 20;
+            const color = Math.max(0, Math.min(1, 1 - normalizedVelocity));
+            return [
+                1 - color,
+                0,
+                color,
+            ]
+        }).flat();
+
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+        const colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
+        gl.enableVertexAttribArray(colorAttributeLocation);
+        gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
         const sizeBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);

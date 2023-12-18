@@ -86,14 +86,16 @@ const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", 
 let lastTime = Date.now();
 let paused: boolean = false;
 
-window.addEventListener('blur', () => {
-    paused = true;
-});
+if (location.hostname !== 'localhost') {
+    window.addEventListener('blur', () => {
+        paused = true;
+    });
 
-window.addEventListener('focus', () => {
-    paused = false;
-    lastTime = Date.now();
-});
+    window.addEventListener('focus', () => {
+        paused = false;
+        lastTime = Date.now();
+    });
+}
 
 let speedMultiplier = 7;
 

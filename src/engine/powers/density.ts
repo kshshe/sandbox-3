@@ -16,7 +16,7 @@ const getDencityAcceleration = gpu
             const MAX_DISTANCE = 150;
             const normalizedDistance = distance / MAX_DISTANCE;
             const result = 1 - Math.abs(normalizedDistance);
-            return Math.pow(result, 15);
+            return Math.pow(result, 3);
         }
         
         function getAntiForceValue(distance: number) {
@@ -29,9 +29,9 @@ const getDencityAcceleration = gpu
             return Math.sqrt(x * x + y * y);
         }
 
-        const MAX_DISTANCE = 150;
+        const MAX_DISTANCE = 40;
         const BASE_FORCE = 15;
-        const BASE_ANTI_DENSITY_FORCE = 0;
+        const BASE_ANTI_DENSITY_FORCE = 1;
         const VISCOSITY = 0.5;
 
         const pointIndex = this.thread.x;
@@ -62,8 +62,8 @@ const getDencityAcceleration = gpu
                 let directionY = y - pointPositionY;
 
                 if (distance === 0) {
-                    directionX = Math.random() - 0.5;
-                    directionY = Math.random() - 0.5;
+                    directionX = 3 * (Math.random() - 0.5);
+                    directionY = 3 * (Math.random() - 0.5);
                     distance = 1;
                 }
 
