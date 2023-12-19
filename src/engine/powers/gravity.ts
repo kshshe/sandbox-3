@@ -1,12 +1,18 @@
+import { initControl } from "../controls";
 import { TVector } from "../data.t";
 import { TPowerProcessor } from "./powers";
 
-const GRAVITY_ACCELERATION = 9.8
+let GRAVITY_ACCELERATION = 9.8
 
 let currentAcceleration: TVector = {
     x: 0,
     y: GRAVITY_ACCELERATION
 }
+
+initControl('input#gravityPower', (e) => {
+    GRAVITY_ACCELERATION = +(((e.target as HTMLInputElement)?.value) ?? 98) / 10
+    currentAcceleration.y = GRAVITY_ACCELERATION
+})
 
 function handleMotion(event) {
     currentAcceleration.x = +event.accelerationIncludingGravity.x || 0;
