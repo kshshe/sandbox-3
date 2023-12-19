@@ -99,6 +99,36 @@ if (location.hostname !== 'localhost') {
 
 let speedMultiplier = 7;
 
+document.body.addEventListener('keydown', (e) => {
+    const isSpace = e.code === 'Space';
+    const isOne = e.code === 'Digit1';
+    const isTwo = e.code === 'Digit2';
+    const isThree = e.code === 'Digit3';
+
+    if (isSpace || isOne || isTwo || isThree) {
+        e.preventDefault();
+    }
+
+    if (isSpace) {
+        paused = !paused;
+    }
+
+    if (isOne) {
+        speedMultiplier = 0.1;
+    }
+
+    if (isTwo) {
+        speedMultiplier = 7;
+    }
+
+    if (isThree) {
+        speedMultiplier = 10;
+    }
+
+    const input = document.querySelector('input#speed') as HTMLInputElement;
+    input.value = (speedMultiplier * 10).toString();
+})
+
 initControl('input#speed', (e) => {
     speedMultiplier = parseInt((e.target as HTMLInputElement).value) / 10
 })
@@ -215,6 +245,8 @@ const updateStatus = () => {
         `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
         `AVG time: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}ms`,
+
+        paused && 'PAUSED',
     ].filter(Boolean).join('<br />');
     statusBlock.innerHTML = text;
 }
