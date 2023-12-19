@@ -181,7 +181,7 @@ export const initRender = () => {
 
         const sizes = points.map((point) => {
             if (!customSizes) {
-                return 2;
+                return 4;
             }
             const closestPointsCount = point.temporaryData.closestPointsCount / 2
             return Math.max(6, Math.min(closestPointsCount || 0, 20))
