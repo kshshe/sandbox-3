@@ -26,10 +26,10 @@ window.getAverageSpeed = () => {
 
 const REFLECTION = 0.45;
 
-const getRandomPoint = (): TPoint => ({
+const getNewPoint = (x?: number, y?: number): TPoint => ({
     position: {
-        x: Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX,
-        y: Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY,
+        x: x || (Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX),
+        y: y || (Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY),
     },
     velocity: {
         x: 0,
@@ -42,15 +42,25 @@ const getRandomPoint = (): TPoint => ({
     temporaryData: {},
 });
 
-for (let i = 0; i < 1000; i++) {
-    points.push(getRandomPoint());
+const INITIAL_POINTS_COUNT = 1000;
+const INITIAL_ROWS = Math.ceil(Math.sqrt(INITIAL_POINTS_COUNT));
+const INITIAL_COLUMNS = Math.ceil(INITIAL_POINTS_COUNT / INITIAL_ROWS);
+
+for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
+    const col = i % INITIAL_COLUMNS;
+    const row = Math.floor(i / INITIAL_COLUMNS);
+
+    const x = BORDERS.minX + (BORDERS.maxX - BORDERS.minX) * col / INITIAL_COLUMNS;
+    const y = BORDERS.minY + (BORDERS.maxY - BORDERS.minY) * row / INITIAL_ROWS;
+
+    points.push(getNewPoint(x, y));
 }
 
 initControl('input#count', (e) => {
     const newCount = parseInt((e.target as HTMLInputElement).value);
     if (newCount > points.length) {
         for (let i = 0; i < newCount - points.length; i++) {
-            points.push(getRandomPoint());
+            points.push(getNewPoint());
         }
     } else {
         points.splice(newCount, points.length - newCount);
