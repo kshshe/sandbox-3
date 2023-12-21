@@ -232,7 +232,7 @@ const statusBlock = document.querySelector('.status') as HTMLDivElement;
 const getUniquePositionsCount = () => {
     const positions = new Set<string>();
     for (const point of points) {
-        positions.add(`${point.position.x.toFixed(3)}:${point.position.y.toFixed(3)}`);
+        positions.add(`${point.position.x.toFixed(1)}:${point.position.y.toFixed(1)}`);
     }
     return positions.size;
 }

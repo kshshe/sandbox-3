@@ -61,9 +61,9 @@ const getDencityAcceleration = gpu
                     let directionX = x - pointPositionX;
                     let directionY = y - pointPositionY;
 
-                    if (distance < 6) {
-                        directionX = 0.03 * (Math.random() - 0.5);
-                        directionY = 0.03 * (Math.random() - 0.5);
+                    if (distance === 0) {
+                        directionX = 0.00003 * (Math.random() - 0.5);
+                        directionY = 0.00003 * (Math.random() - 0.5);
                         distance = Math.sqrt(directionX * directionX + directionY * directionY);
                     }
 
