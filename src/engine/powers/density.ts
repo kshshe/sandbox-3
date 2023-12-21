@@ -3,6 +3,7 @@ import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
 import { GPU } from '../../gpu.d'
 import { initControl } from "../controls";
+import { INITIAL_POINTS_COUNT } from "../constants";
 
 // @ts-ignore
 const GPUClass = (window.GPU?.GPU || window.GPU);
@@ -94,7 +95,7 @@ const getDencityAcceleration = gpu
             closestPointsCount,
         ];
     })
-    .setOutput([1000])
+    .setOutput([INITIAL_POINTS_COUNT])
     .setDynamicOutput(true)
     .setDynamicArguments(true);
 
@@ -102,7 +103,7 @@ const getDencityAcceleration = gpu
 window.getDencityAcceleration = getDencityAcceleration;
 
 const constants = {
-    pointsCount: 1000,
+    pointsCount: INITIAL_POINTS_COUNT,
     maxDistance: 40,
     baseForce: 40,
     baseAntiDensityForce: 1,

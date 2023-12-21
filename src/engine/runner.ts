@@ -1,4 +1,4 @@
-import { BORDERS, POINT_RADIUS } from "./constants";
+import { BORDERS, INITIAL_COLUMNS, INITIAL_POINTS_COUNT, INITIAL_ROWS, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
@@ -41,10 +41,6 @@ const getNewPoint = (x?: number, y?: number): TPoint => ({
     },
     temporaryData: {},
 });
-
-const INITIAL_POINTS_COUNT = 1000;
-const INITIAL_ROWS = Math.ceil(Math.sqrt(INITIAL_POINTS_COUNT));
-const INITIAL_COLUMNS = Math.ceil(INITIAL_POINTS_COUNT / INITIAL_ROWS);
 
 for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
     const col = i % INITIAL_COLUMNS;
