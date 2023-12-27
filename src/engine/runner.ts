@@ -143,6 +143,12 @@ const times: number[] = [];
 
 const MAX_SPEED = 300;
 
+let slowdownPower = 999;
+
+initControl('input#slowdown-power', (e) => {
+    slowdownPower = parseInt((e.target as HTMLInputElement).value);
+})
+
 const step = () => {
     const now = Date.now();
     if (paused) {
@@ -187,7 +193,7 @@ const step = () => {
             point.velocity.y = point.velocity.y || 0;
         }
 
-        point.velocity = multiplyVector(point.velocity, Math.pow(0.999, timeDiff / 1000));
+        point.velocity = multiplyVector(point.velocity, Math.pow((slowdownPower / 1000), timeDiff / 1000));
 
         point.velocity.x += point.acceleration.x * timeDiff / 1000;
         point.velocity.y += point.acceleration.y * timeDiff / 1000;
