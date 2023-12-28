@@ -6,10 +6,16 @@ import { points } from "./runner";
 import { getVectorLength } from "./utils/vector";
 
 let customSizes = false;
+let showArrows = false;
 
 initControl('input#custom-sizes', (e) => {
     const input = e.target as HTMLInputElement;
     customSizes = input.checked;
+})
+
+initControl('input#show-arrows', (e) => {
+    const input = e.target as HTMLInputElement;
+    showArrows = input.checked;
 })
 
 export const initRender = () => {
@@ -265,6 +271,51 @@ export const initRender = () => {
         gl.vertexAttribPointer(sizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
 
         gl.drawArrays(gl.POINTS, 0, waterPoints.length / 2);
+
+        if (showArrows) {
+            // Render velocity arrows
+            const arrowSize = 3;
+            const arrowColor = [0, 0, 0, 0.2]; // Black color for arrows
+
+            const arrowPoints = points.map((point) => {
+                const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
+                const normalizedYCord = 1 - 2 * point.position.y / BORDERS.maxY;
+                const arrowEndX = normalizedXCord + (point.velocity.x / BORDERS.maxX) * arrowSize;
+                const arrowEndY = normalizedYCord - (point.velocity.y / BORDERS.maxY) * arrowSize;
+                return [
+                    normalizedXCord,
+                    normalizedYCord,
+                    arrowEndX,
+                    arrowEndY
+                ];
+            }).flat();
+
+            const arrowVertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, arrowVertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowPoints), gl.STATIC_DRAW);
+
+            const arrowPositionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+            gl.enableVertexAttribArray(arrowPositionAttributeLocation);
+            gl.vertexAttribPointer(arrowPositionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+            const arrowColorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, arrowColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowColor), gl.STATIC_DRAW);
+
+            const arrowColorAttributeLocation = gl.getAttribLocation(program, 'a_color');
+            gl.enableVertexAttribArray(arrowColorAttributeLocation);
+            gl.vertexAttribPointer(arrowColorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+
+            const arrowSizeBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, arrowSizeBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Array(points.length).fill(arrowSize)), gl.STATIC_DRAW);
+
+            const arrowSizeAttributeLocation = gl.getAttribLocation(program, 'a_size');
+            gl.enableVertexAttribArray(arrowSizeAttributeLocation);
+            gl.vertexAttribPointer(arrowSizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
+
+            gl.drawArrays(gl.LINES, 0, arrowPoints.length / 2);
+        }
 
         requestAnimationFrame(render);
     }
