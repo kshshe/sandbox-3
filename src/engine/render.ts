@@ -275,7 +275,7 @@ export const initRender = () => {
         if (showArrows) {
             // Render velocity arrows
             const arrowSize = 3;
-            const arrowColor = [0, 0, 0, 0.2]; // Black color for arrows
+            const arrowColor = [0, 0, 0]; // Black color for arrows
 
             const arrowPoints = points.map((point) => {
                 const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
