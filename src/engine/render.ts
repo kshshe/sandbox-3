@@ -49,8 +49,8 @@ export const initRender = () => {
                 pointsInMouseRadius.length < 5 && pointsInMouseRadius.map((point) => {
                     return [
                         `P ${point.position.x.toFixed(0)}x${point.position.y.toFixed(0)}`,
-                        `A ${getVectorLength(point.velocity).toFixed(2)}`,
-                        `V ${getVectorLength(point.acceleration).toFixed(2)}`,
+                        `A ${getVectorLength(point.acceleration).toFixed(2)}`,
+                        `V ${getVectorLength(point.velocity).toFixed(2)}`,
                         ''
                     ]
                 }).flat().join('<br />'),
