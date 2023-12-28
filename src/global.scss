@@ -10,6 +10,7 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
+    cursor: none;
 }
 
 .controls {
@@ -30,4 +31,31 @@ canvas {
     .status {
         margin-top: 10px;
     }
+}
+
+.cursor-circle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #74747467;
+    will-change: transform;
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+.info {
+    display: none;
+    position: fixed;
+    will-change: transform;
+    z-index: 100;
+    pointer-events: none;
+    margin-left: 70px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    transform: translate(-50%, -50%);
 }

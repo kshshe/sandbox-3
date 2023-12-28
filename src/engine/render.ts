@@ -20,6 +20,54 @@ export const initRender = () => {
 
     let currentMousePosition: TVector | null = null;
     let isPressed = false;
+
+    const cursorCircle = document.querySelector('.cursor-circle') as HTMLDivElement;
+    const cursorInfo = document.querySelector('.info') as HTMLDivElement;
+    const radius = 20;
+    const renderMouse = () => {
+        if (!currentMousePosition) {
+            cursorCircle.style.display = 'none';
+            cursorInfo.style.display = 'none';
+        } else {
+            cursorCircle.style.display = 'block';
+            cursorInfo.style.display = 'block';
+            const transform = `translate(${currentMousePosition.x - radius}px, ${currentMousePosition.y - radius}px)`;
+            cursorCircle.style.transform = transform;
+            cursorInfo.style.transform = transform;
+            const mousePosition = currentMousePosition;
+
+            const pointsInMouseRadius = points.filter((point) => {
+                const distance = getVectorLength({
+                    x: point.position.x - mousePosition.x,
+                    y: point.position.y - mousePosition.y,
+                });
+                return distance < radius;
+            });
+
+            const dataParts = [
+                `Точек: ${pointsInMouseRadius.length}`,
+                pointsInMouseRadius.length < 5 && pointsInMouseRadius.map((point) => {
+                    return [
+                        `P ${point.position.x.toFixed(0)}x${point.position.y.toFixed(0)}`,
+                        `A ${getVectorLength(point.velocity).toFixed(2)}`,
+                        `V ${getVectorLength(point.acceleration).toFixed(2)}`,
+                        ''
+                    ]
+                }).flat().join('<br />'),
+            ].filter(Boolean)
+
+            cursorInfo.innerHTML = dataParts.join('<br />');
+        }
+    }
+
+    const renderMouseLoop = () => {
+        renderMouse();
+        requestAnimationFrame(renderMouseLoop);
+    }
+
+    renderMouse();
+    requestAnimationFrame(renderMouseLoop);
+
     canvas.addEventListener("mousemove", (event) => {
         const pixelX = event.clientX;
         const pixelY = event.clientY;
@@ -28,6 +76,7 @@ export const initRender = () => {
             x: pixelX,
             y: pixelY,
         };
+        renderMouse();
         if (isPressed) {
             setMousePosition(currentMousePosition);
         }
@@ -37,6 +86,7 @@ export const initRender = () => {
         currentMousePosition = null;
         setMousePosition(null);
         isPressed = false;
+        renderMouse();
     });
 
     canvas.addEventListener('contextmenu', (e) => {
