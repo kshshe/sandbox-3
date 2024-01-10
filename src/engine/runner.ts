@@ -1,4 +1,4 @@
-import { BORDERS, INITIAL_COLUMNS, INITIAL_POINTS_COUNT, INITIAL_ROWS, POINT_RADIUS } from "./constants";
+import { BORDERS, INITIAL_COLUMNS, INITIAL_POINTS_COUNT, INITIAL_ROWS, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
@@ -55,7 +55,9 @@ for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
 initControl('input#count', (e) => {
     const newCount = parseInt((e.target as HTMLInputElement).value);
     if (newCount > points.length) {
-        for (let i = 0; i < newCount - points.length; i++) {
+        const allowedToAdd = MAX_POINTS_COUNT - points.length;
+        const toAdd = Math.min(allowedToAdd, newCount - points.length);
+        for (let i = 0; i < toAdd; i++) {
             points.push(getNewPoint());
         }
     } else {

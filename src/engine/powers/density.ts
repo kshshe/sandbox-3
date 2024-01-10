@@ -3,7 +3,7 @@ import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
 import { GPU } from '../../gpu.d'
 import { initControl } from "../controls";
-import { INITIAL_POINTS_COUNT } from "../constants";
+import { INITIAL_POINTS_COUNT, MAX_POINTS_COUNT } from "../constants";
 
 // @ts-ignore
 const GPUClass = (window.GPU?.GPU || window.GPU);
@@ -101,7 +101,7 @@ const getDencityAcceleration = gpu
         ];
     })
     .setOutput([INITIAL_POINTS_COUNT])
-    .setLoopMaxIterations(INITIAL_POINTS_COUNT + 1)
+    .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
     .setDynamicOutput(true)
     .setDynamicArguments(true);
 
@@ -143,8 +143,7 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     const neededSize = points.length;
     if (kernelOutputSize != neededSize) {
         getDencityAcceleration
-            .setOutput([neededSize])
-            .setLoopMaxIterations(neededSize + 1)         
+            .setOutput([neededSize])       
 
         constants.pointsCount = neededSize;
     }
