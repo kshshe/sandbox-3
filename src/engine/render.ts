@@ -153,219 +153,49 @@ export const initRender = () => {
         isPressed = true;
     });
 
-    const gl = canvas.getContext("webgl");
+    const ctx = canvas.getContext('2d');
 
-    if (!gl) {
+    if (!ctx) {
         throw new Error("Can't get canvas context");
     }
 
-    function loadShader(gl, type, source) {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error('Ошибка компиляции шейдера:', gl.getShaderInfoLog(shader));
-            gl.deleteShader(shader);
-            return null;
-        }
-
-        return shader;
-    }
-
-    // Вершинный шейдер
-    const vertexShaderSource = `
-        attribute vec2 a_position;
-        attribute float a_size;
-        attribute vec3 a_color;
-        varying float v_size;
-        varying vec3 v_color;
-      
-        void main() {
-          gl_Position = vec4(a_position, 0.0, 1.0);
-          gl_PointSize = a_size; 
-          v_size = a_size;
-          v_color = a_color;
-        }
-      `;
-
-    // Фрагментный шейдер
-    const fragmentShaderSource = `
-        precision mediump float;
-        varying vec3 v_color;
-      
-        void main() {
-          gl_FragColor = vec4(v_color, 1.0);
-        }
-      `;
-
-    // Загружаем вершинный и фрагментный шейдеры
-    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-    // Создаем программу и прикрепляем шейдеры
-    const program = gl.createProgram();
-    if (!program) {
-        throw new Error("Can't create program");
-    }
-
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Ошибка при создании программы:', gl.getProgramInfoLog(program));
-    }
-
-    // Используем программу
-    gl.useProgram(program);
-
     const render = () => {
-        const waterPoints = points.map((point) => {
-            const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
-            const normalizedYCord = 1 - 2 * point.position.y / BORDERS.maxY;
-            return [
-                normalizedXCord,
-                normalizedYCord,
-            ]
-        }).flat();
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(waterPoints), gl.STATIC_DRAW);
-
-        const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-        gl.enableVertexAttribArray(positionAttributeLocation);
-        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-
-        gl.clearColor(1.0, 1.0, 1.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        const sizes = points.map((point) => {
-            if (!customSizes) {
-                return 4;
-            }
-            const closestPointsCount = point.temporaryData.closestPointsCount / 2
-            return Math.max(6, Math.min(closestPointsCount || 0, 20))
-        });
-
-        const colors = points.map((point) => {
+        // Draw points
+        points.forEach(point => {
+            const size = !customSizes ? 4 : Math.max(6, Math.min(point.temporaryData.closestPointsCount / 2, 20));
             const velocity = getVectorLength(point.velocity);
-            const normalizedVelocity = velocity / 20;
-            const color = Math.max(0, Math.min(1, 1 - normalizedVelocity));
-            return [
-                1 - color,
-                0,
-                color,
-            ]
-        }).flat();
+            const normalizedVelocity = Math.min(velocity / 20, 1);
+            const color = `rgb(${255 * normalizedVelocity}, 0, ${255 * (1 - normalizedVelocity)})`;
 
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-        const colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
-        gl.enableVertexAttribArray(colorAttributeLocation);
-        gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
-
-        const sizeBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizes), gl.STATIC_DRAW);
-
-        const sizeAttributeLocation = gl.getAttribLocation(program, 'a_size');
-        gl.enableVertexAttribArray(sizeAttributeLocation);
-        gl.vertexAttribPointer(sizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
-
-        gl.drawArrays(gl.POINTS, 0, waterPoints.length / 2);
-
+            ctx.beginPath();
+            ctx.arc(point.position.x, point.position.y, size / 2, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        });
+        
         if (showArrows) {
-            // Render acceleration arrows
-            const arrowSize = 3;
-            const arrowColor = [1, 0, 0]; // Red color for arrows
-        
-            const arrowPoints = points.map((point) => {
-                const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
-                const normalizedYCord = 1 - 2 * point.position.y / BORDERS.maxY;
-                const arrowEndX = normalizedXCord + (point.acceleration.x / BORDERS.maxX) * arrowSize;
-                const arrowEndY = normalizedYCord - (point.acceleration.y / BORDERS.maxY) * arrowSize;
-                return [
-                    normalizedXCord,
-                    normalizedYCord,
-                    arrowEndX,
-                    arrowEndY
-                ];
-            }).flat();
-        
-            const arrowVertexBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowVertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowPoints), gl.STATIC_DRAW);
-        
-            const arrowPositionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-            gl.enableVertexAttribArray(arrowPositionAttributeLocation);
-            gl.vertexAttribPointer(arrowPositionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-        
-            const arrowColorBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowColor), gl.STATIC_DRAW);
-        
-            const arrowColorAttributeLocation = gl.getAttribLocation(program, 'a_color');
-            gl.enableVertexAttribArray(arrowColorAttributeLocation);
-            gl.vertexAttribPointer(arrowColorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
-        
-            const arrowSizeBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowSizeBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Array(points.length).fill(arrowSize)), gl.STATIC_DRAW);
-        
-            const arrowSizeAttributeLocation = gl.getAttribLocation(program, 'a_size');
-            gl.enableVertexAttribArray(arrowSizeAttributeLocation);
-            gl.vertexAttribPointer(arrowSizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
-        
-            gl.drawArrays(gl.LINES, 0, arrowPoints.length / 2);
+            // reg arrows to represent acceleration
+            points.forEach(point => {
+                const color = `rgb(200, 0, 0)`;
+                ctx.beginPath();
+                ctx.moveTo(point.position.x, point.position.y);
+                ctx.lineTo(point.position.x + point.acceleration.x, point.position.y + point.acceleration.y);
+                ctx.strokeStyle = color;
+                ctx.stroke();
+            });
         }
 
         if (showSpeedArrows) {
-            // Render velocity arrows
-            const arrowSize = 3;
-            const arrowColor = [0, 0, 1]; // Blue color for arrows
-        
-            const arrowPoints = points.map((point) => {
-                const normalizedXCord = 2 * point.position.x / BORDERS.maxX - 1;
-                const normalizedYCord = 1 - 2 * point.position.y / BORDERS.maxY;
-                const arrowEndX = normalizedXCord + (point.velocity.x / BORDERS.maxX) * arrowSize;
-                const arrowEndY = normalizedYCord - (point.velocity.y / BORDERS.maxY) * arrowSize;
-                return [
-                    normalizedXCord,
-                    normalizedYCord,
-                    arrowEndX,
-                    arrowEndY
-                ];
-            }).flat();
-        
-            const arrowVertexBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowVertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowPoints), gl.STATIC_DRAW);
-        
-            const arrowPositionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-            gl.enableVertexAttribArray(arrowPositionAttributeLocation);
-            gl.vertexAttribPointer(arrowPositionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-        
-            const arrowColorBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrowColor), gl.STATIC_DRAW);
-        
-            const arrowColorAttributeLocation = gl.getAttribLocation(program, 'a_color');
-            gl.enableVertexAttribArray(arrowColorAttributeLocation);
-            gl.vertexAttribPointer(arrowColorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
-        
-            const arrowSizeBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, arrowSizeBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Array(points.length).fill(arrowSize)), gl.STATIC_DRAW);
-        
-            const arrowSizeAttributeLocation = gl.getAttribLocation(program, 'a_size');
-            gl.enableVertexAttribArray(arrowSizeAttributeLocation);
-            gl.vertexAttribPointer(arrowSizeAttributeLocation, 1, gl.FLOAT, false, 0, 0);
-        
-            gl.drawArrays(gl.LINES, 0, arrowPoints.length / 2);
+            points.forEach(point => {
+                const color = `rgb(0, 0, 200)`;
+                ctx.beginPath();
+                ctx.moveTo(point.position.x, point.position.y);
+                ctx.lineTo(point.position.x + point.velocity.x, point.position.y + point.velocity.y);
+                ctx.strokeStyle = color;
+                ctx.stroke();
+            });
         }
 
         requestAnimationFrame(render);
