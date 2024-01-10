@@ -206,14 +206,6 @@ const step = () => {
             point.velocity.y = MAX_SPEED;
         }
 
-        if (Math.abs(point.velocity.x) < 0.1) {
-            point.velocity.x = 0;
-        }
-
-        if (Math.abs(point.velocity.y) < 0.1) {
-            point.velocity.y = 0;
-        }
-
         point.position.x += point.velocity.x * timeDiff / 1000;
         point.position.y += point.velocity.y * timeDiff / 1000;
 
