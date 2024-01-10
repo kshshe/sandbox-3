@@ -2,7 +2,6 @@ import { densityProcessor } from "./density";
 import { gravityProcessor } from "./gravity";
 import { mouseProcessor } from "./mouse";
 import { TPowerProcessor } from "./powers";
-import { randomnessProcessor } from "./randomness";
 import { initControl } from "../controls";
 import { collisionProcessor } from "./collision";
 
@@ -14,7 +13,6 @@ const availablePowers: Record<string, TPowerProcessor> = {
 
 export const powers: Array<TPowerProcessor> = [
     densityProcessor,
-    randomnessProcessor,
     mouseProcessor,
 ];
 
