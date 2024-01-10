@@ -11,7 +11,9 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 console.log({ GPUClass })
 
 // @ts-ignore
-const gpu = new GPUClass() as GPU;
+const gpu = new GPUClass({
+    mode: 'gpu',
+}) as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
         function getForceValue(normalizedDistance: number) {
@@ -45,8 +47,9 @@ const getDencityAcceleration = gpu
         let totalAccelerationY = 0;
 
         let closestPointsCount = 0;
-
-        for (let i = 0; i < pointsCount; i += 1) {
+        
+        let i = 0;
+        while (i < pointsCount) {
             const otherPointStartIndex = 4 * i + pointsGlobalStartIndex;
             if (pointIndex !== i) {
                 const x = a[otherPointStartIndex];
@@ -87,6 +90,8 @@ const getDencityAcceleration = gpu
                     totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
                 }
             }
+
+            i += 1;
         }
 
         return [
@@ -96,6 +101,7 @@ const getDencityAcceleration = gpu
         ];
     })
     .setOutput([INITIAL_POINTS_COUNT])
+    .setLoopMaxIterations(INITIAL_POINTS_COUNT + 1)
     .setDynamicOutput(true)
     .setDynamicArguments(true);
 
@@ -138,18 +144,20 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     if (kernelOutputSize != neededSize) {
         getDencityAcceleration
             .setOutput([neededSize])
+            .setLoopMaxIterations(neededSize + 1)         
 
         constants.pointsCount = neededSize;
     }
 
-    const kernelResult = getDencityAcceleration([
+    const kernelInput = [
         constants.pointsCount,
         constants.maxDistance,
         constants.baseForce,
         constants.baseAntiDensityForce,
         constants.viscosity,
         ...pointsToFlatArray(points),
-    ] as number[]);
+    ] as number[];
+    const kernelResult = getDencityAcceleration(kernelInput);
 
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number, number];

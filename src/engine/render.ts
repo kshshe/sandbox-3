@@ -48,21 +48,30 @@ export const initRender = () => {
             cursorInfo.style.transform = transform;
             const mousePosition = currentMousePosition;
 
-            const pointsInMouseRadius = points.filter((point) => {
+            const pointsInMouseRadius = points.map((point, pointIndex) => {
                 const distance = getVectorLength({
                     x: point.position.x - mousePosition.x,
                     y: point.position.y - mousePosition.y,
                 });
-                return distance < radius;
-            });
+                return {
+                    condition: distance < radius,
+                    point,
+                    pointIndex,
+                };
+            })
+            .filter(({ condition }) => condition)
 
             const dataParts = [
                 `Точек: ${pointsInMouseRadius.length}`,
-                pointsInMouseRadius.length < 5 && pointsInMouseRadius.map((point) => {
+                pointsInMouseRadius.length < 5 && pointsInMouseRadius.map(({
+                    point,
+                    pointIndex,
+                }) => {
                     return [
                         `P ${point.position.x.toFixed(0)}x${point.position.y.toFixed(0)}`,
                         `A ${getVectorLength(point.acceleration).toFixed(2)}`,
                         `V ${getVectorLength(point.velocity).toFixed(2)}`,
+                        `I ${pointIndex}`,
                         ''
                     ]
                 }).flat().join('<br />'),
@@ -163,7 +172,7 @@ export const initRender = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
         // Draw points
-        points.forEach(point => {
+        points.forEach((point, pointIn) => {
             const size = !customSizes ? 4 : Math.max(6, Math.min(point.temporaryData.closestPointsCount / 2, 20));
             const velocity = getVectorLength(point.velocity);
             const normalizedVelocity = Math.min(velocity / 20, 1);
