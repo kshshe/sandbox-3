@@ -179,7 +179,7 @@ export const initRender = () => {
             const color = `rgb(${255 * normalizedVelocity}, 0, ${255 * (1 - normalizedVelocity)})`;
 
             ctx.beginPath();
-            ctx.arc(point.position.x, point.position.y, size / 2, 0, Math.PI * 2);
+            ctx.rect(point.position.x - size / 2, point.position.y - size / 2, size, size);
             ctx.fillStyle = color;
             ctx.fill();
         });
