@@ -4,7 +4,9 @@ import { TPoint } from "./data.t";
 import { powers } from "./powers";
 import { getVectorLength, multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
-const fps = new FPS()
+const fps = new FPS({
+    FPS: 200,
+})
 
 export const points: TPoint[] = [];
 
@@ -226,12 +228,13 @@ const step = () => {
     if (times.length > 100) {
         times.shift();
     }
-
-    requestAnimationFrame(step);
 }
 
-export const run = () => {
-    step();
+export const run = async () => {
+    while (true) {
+        step();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+    }
 }
 
 const statusBlock = document.querySelector('.status') as HTMLDivElement;
