@@ -8,6 +8,12 @@ import { getVectorLength } from "./utils/vector";
 let customSizes = false;
 let showArrows = false;
 let showSpeedArrows = false;
+let TARGET_FPS = 45;
+
+initControl('input#maxFps', (e) => {
+    const input = e.target as HTMLInputElement;
+    TARGET_FPS = parseInt(input.value);
+})
 
 initControl('input#custom-sizes', (e) => {
     const input = e.target as HTMLInputElement;
@@ -169,7 +175,6 @@ export const initRender = () => {
     }
 
     let lastFrameTime = Date.now();
-    const TARGET_FPS = 45;
 
     const render = () => {
         const now = Date.now();
