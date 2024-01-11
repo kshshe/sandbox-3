@@ -244,13 +244,14 @@ const getUniquePositionsCount = () => {
 }
 
 const updateStatus = () => {
+    const averageTime = times.reduce((a, b) => a + b, 0) / times.length
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Max speed: ${points.reduce((a, b) => Math.max(a, getVectorLength(b.velocity)), 0).toFixed(2)}`,
         `Points: ${points.length}`,
         `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
-        `AVG time: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}ms`,
+        `AVG time: ${averageTime > 16 ? '🐌' : (averageTime > 10 ? '⚠️ ' : '')}${averageTime.toFixed(2)}ms`,
 
         paused && 'PAUSED',
     ].filter(Boolean).join('<br />');
