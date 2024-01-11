@@ -157,7 +157,6 @@ const step = () => {
     const now = Date.now();
     if (paused) {
         lastTime = now - 10;
-        requestAnimationFrame(step);
         return;
     }
 
@@ -233,7 +232,7 @@ const step = () => {
 export const run = async () => {
     while (true) {
         step();
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, paused ? 100 : 0));
     }
 }
 
