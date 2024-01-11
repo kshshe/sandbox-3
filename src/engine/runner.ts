@@ -143,7 +143,7 @@ initControl('input#speed', (e) => {
     speedMultiplier = parseInt((e.target as HTMLInputElement).value) / 10
 })
 
-const times: number[] = [];
+let lastStepDuration = 0;
 
 const MAX_SPEED = 300;
 
@@ -219,11 +219,7 @@ const step = () => {
     fps.frame()
 
     const endTime = performance.now();
-    times.push(endTime - startTime);
-
-    if (times.length > 100) {
-        times.shift();
-    }
+    lastStepDuration = endTime - startTime;
 }
 
 export const run = async () => {
@@ -244,14 +240,13 @@ const getUniquePositionsCount = () => {
 }
 
 const updateStatus = () => {
-    const averageTime = times.reduce((a, b) => a + b, 0) / times.length
     const text = [
         `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         `Max speed: ${points.reduce((a, b) => Math.max(a, getVectorLength(b.velocity)), 0).toFixed(2)}`,
         `Points: ${points.length}`,
         `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: ${process.env.VERCEL_GIT_COMMIT_MESSAGE}`,
-        `AVG time: ${averageTime > 16 ? '🐌' : (averageTime > 10 ? '⚠️ ' : '')}${averageTime.toFixed(2)}ms`,
+        `Step: ${lastStepDuration > 16 ? '🐌' : (lastStepDuration > 10 ? '⚠️ ' : '')}${lastStepDuration.toFixed(2)}ms`,
 
         paused && 'PAUSED',
     ].filter(Boolean).join('<br />');
