@@ -168,7 +168,17 @@ export const initRender = () => {
         throw new Error("Can't get canvas context");
     }
 
+    let lastFrameTime = Date.now();
+    const TARGET_FPS = 45;
+
     const render = () => {
+        const now = Date.now();
+        const isEnoughtToTargetFps = now - lastFrameTime > 1000 / TARGET_FPS;
+        if (!isEnoughtToTargetFps) {
+            requestAnimationFrame(render);
+            return;
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
         // Draw points
@@ -206,6 +216,8 @@ export const initRender = () => {
                 ctx.stroke();
             });
         }
+
+        lastFrameTime = now;
 
         requestAnimationFrame(render);
     }
