@@ -10,25 +10,25 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 
 console.log({ GPUClass })
 
+function getForceValue(normalizedDistance: number) {
+    const result = 1 - Math.abs(normalizedDistance);
+    return Math.pow(result, 3);
+}
+
+function getAntiForceValue(normalizedDistance: number) {
+    return Math.pow(Math.abs(normalizedDistance), 2);
+}
+
+function getVectorLength(x: number, y: number) {
+    return Math.sqrt(x * x + y * y);
+}
+
 // @ts-ignore
 const gpu = new GPUClass({
     mode: 'gpu',
 }) as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
-        function getForceValue(normalizedDistance: number) {
-            const result = 1 - Math.abs(normalizedDistance);
-            return Math.pow(result, 3);
-        }
-        
-        function getAntiForceValue(normalizedDistance: number) {
-            return Math.pow(Math.abs(normalizedDistance), 2);
-        }
-
-        function getVectorLength(x: number, y: number) {
-            return Math.sqrt(x * x + y * y);
-        }
-
         const pointsCount = a[0];
         const maxDistance = a[1];
         const baseForce = a[2];
@@ -73,7 +73,7 @@ const getDencityAcceleration = gpu
                                 directionY = 0.00003 * (Math.random() - 0.5);
                                 distance = Math.sqrt(directionX * directionX + directionY * directionY);
                             }
-                            
+
                             const otherPointVelocityX = a[otherPointStartIndex + 2];
                             const otherPointVelocityY = a[otherPointStartIndex + 3];
 
@@ -111,7 +111,12 @@ const getDencityAcceleration = gpu
     .setOutput([INITIAL_POINTS_COUNT])
     .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
     .setDynamicOutput(true)
-    .setDynamicArguments(true);
+    .setDynamicArguments(true)
+    .setFunctions([
+        getForceValue,
+        getAntiForceValue,
+        getVectorLength,
+    ])
 
 // @ts-ignore
 window.getDencityAcceleration = getDencityAcceleration;
