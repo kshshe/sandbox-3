@@ -55,9 +55,6 @@ const getDencityAcceleration = gpu
                 const x = a[otherPointStartIndex];
                 const y = a[otherPointStartIndex + 1];
 
-                const otherPointVelocityX = a[otherPointStartIndex + 2];
-                const otherPointVelocityY = a[otherPointStartIndex + 3];
-
                 const distanceByX = Math.abs(x - pointPositionX);
 
                 if (distanceByX < maxDistance) {
@@ -76,6 +73,9 @@ const getDencityAcceleration = gpu
                                 directionY = 0.00003 * (Math.random() - 0.5);
                                 distance = Math.sqrt(directionX * directionX + directionY * directionY);
                             }
+                            
+                            const otherPointVelocityX = a[otherPointStartIndex + 2];
+                            const otherPointVelocityY = a[otherPointStartIndex + 3];
 
                             const normalizedDirectionX = directionX / distance;
                             const normalizedDirectionY = directionY / distance;
