@@ -6,9 +6,22 @@ import { TPowerProcessor } from "./powers";
 
 let GRAVITY_ACCELERATION = 9.8
 let isCentered = false
+let isLeft = false
+let isRight = false
+let isTop = false
 
-initControl('input#gravityCentered', (e) => {
-    isCentered = (e.target as HTMLInputElement)?.checked ?? false
+initControl('select#gravityDirection', (e) => {
+    isCentered = (e.target as HTMLInputElement)?.value === 'center'
+    isLeft = (e.target as HTMLInputElement)?.value === 'left'
+    isRight = (e.target as HTMLInputElement)?.value === 'right'
+    isTop = (e.target as HTMLInputElement)?.value === 'top'
+
+    console.log({
+        isCentered,
+        isLeft,
+        isRight,
+        isTop
+    })
 })
 
 let currentAcceleration: TVector = {
@@ -30,7 +43,7 @@ const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-document.querySelector('input#gravity')?.addEventListener('click', async () => {
+document.querySelector('input#gravityDirection')?.addEventListener('click', async () => {
     if (
         DeviceMotionEvent &&
         // @ts-ignore
@@ -72,6 +85,22 @@ export const gravityProcessor: TPowerProcessor = (point) => {
     }
 
     const { x, y } = getAccelerometerDirection()
+
+    if (isLeft) {
+        point.acceleration.x -= GRAVITY_ACCELERATION
+        return
+    }
+
+    if (isRight) {
+        point.acceleration.x += GRAVITY_ACCELERATION
+        return
+    }
+
+    if (isTop) {
+        point.acceleration.y -= GRAVITY_ACCELERATION
+        return
+    }
+
     point.acceleration.y += y
     point.acceleration.x += x
 }
