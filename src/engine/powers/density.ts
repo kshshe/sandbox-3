@@ -13,91 +13,97 @@ console.log({ GPUClass })
 
 // @ts-ignore
 const gpu = new GPUClass({
-    mode: 'gpu',
+    mode: 'cpu',
 }) as GPU;
 const getDencityAcceleration = gpu
-    .createKernel(function(a: number[]) {
-        function getChunkIndex(x: number, y: number, gridWidth: number, maxDistance: number) {
-            const chunkX = Math.floor(x / maxDistance);
-            const chunkY = Math.floor(y / maxDistance);
-            return chunkX + chunkY * gridWidth;
-        }
+    .createKernel(function(data: [
+        number[], // config
+        number[], // chunks and chunksStartingIndicesAndLengths
+        number[], // points
+    ]) {
+        const config = data[0];
+        const chunksAndChunksStartingIndicesAndLengths = data[1];
+        const points = data[2];
 
-        const pointsCount = a[0];
-        const maxDistance = a[1];
-        const baseForce = a[2];
-        const baseAntiDensityForce = a[3];
-        const viscosity = a[4];
-        const chunksLength = a[5];
-        const chunksStartingIndicesAndLengthsLength = a[6];
+        const pointsCount = config[0];
+        const maxDistance = config[1];
+        const baseForce = config[2];
+        const baseAntiDensityForce = config[3];
+        const viscosity = config[4];
+        const chunksLength = config[5];
+        const chunksStartingIndicesAndLengthsLength = config[6];
+        const gridWidth = config[7]
+        const gridHeight = config[8];
 
-        const pointsGlobalStartIndex = 7 + chunksLength + chunksStartingIndicesAndLengthsLength;
         const pointIndex = this.thread.x;
-        const pointStartIndex = pointIndex * 4 + pointsGlobalStartIndex;
-        const pointPositionX = a[pointStartIndex];
-        const pointPositionY = a[pointStartIndex + 1];
-        const pointVelocityX = a[pointStartIndex + 2];
-        const pointVelocityY = a[pointStartIndex + 3];
+        const pointStartIndex = pointIndex * 4;
+        const pointPositionX = points[pointStartIndex];
+        const pointPositionY = points[pointStartIndex + 1];
+        const pointVelocityX = points[pointStartIndex + 2];
+        const pointVelocityY = points[pointStartIndex + 3];
 
+        const chunkX = Math.floor(pointPositionX / maxDistance);
+        const chunkY = Math.floor(pointPositionY / maxDistance);
+        
         let totalAccelerationX = 0;
         let totalAccelerationY = 0;
 
         let closestPointsCount = 0;
-        
-        let i = 0;
-        while (i < pointsCount) {
-            const otherPointStartIndex = 4 * i + pointsGlobalStartIndex;
-            if (pointIndex !== i) {
-                const x = a[otherPointStartIndex];
-                const y = a[otherPointStartIndex + 1];
 
-                const distanceByX = Math.abs(x - pointPositionX);
+        for (let xChunkDiff = -1; xChunkDiff <= 1; xChunkDiff++) {
+            for (let yChunkDiff = -1; yChunkDiff <= 1; yChunkDiff++) {
+                const neighborChunkX = chunkX + xChunkDiff;
+                const neighborChunkY = chunkY + yChunkDiff;
 
-                if (distanceByX < maxDistance) {
-                    const distanceByY = Math.abs(y - pointPositionY);
+                if (neighborChunkX >= 0 && neighborChunkX < gridWidth) {
+                    if (neighborChunkY >= 0 && neighborChunkY < gridHeight) {
+                        const targetChunkIndex = neighborChunkX + neighborChunkY * gridWidth;
 
-                    if (distanceByY < maxDistance) {
-                        const xDiff = x - pointPositionX;
-                        const yDiff = y - pointPositionY;
-                        let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
-
-                        if (distance <= maxDistance) {
-                            closestPointsCount++;
-                            let directionX = x - pointPositionX;
-                            let directionY = y - pointPositionY;
-
-                            if (distance === 0) {
-                                directionX = 0.00003 * (Math.random() - 0.5);
-                                directionY = 0.00003 * (Math.random() - 0.5);
-                                distance = Math.sqrt(directionX * directionX + directionY * directionY);
+                        const targetChunkStartingIndex = chunksAndChunksStartingIndicesAndLengths[targetChunkIndex * 2];
+                        const targetChunkLength = chunksAndChunksStartingIndicesAndLengths[targetChunkIndex * 2 + 1];
+    
+                        for (let cellIndex = targetChunkStartingIndex; cellIndex < targetChunkStartingIndex + targetChunkLength; cellIndex++) {
+                            const otherPointStartIndex = chunksAndChunksStartingIndicesAndLengths[chunksStartingIndicesAndLengthsLength + cellIndex] * 4;
+    
+                            const x = points[otherPointStartIndex];
+                            const y = points[otherPointStartIndex + 1];
+    
+                            const xDiff = x - pointPositionX;
+                            const yDiff = y - pointPositionY;
+                            let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
+    
+                            if (distance <= maxDistance) {
+                                closestPointsCount++;
+                                let directionX = x - pointPositionX;
+                                let directionY = y - pointPositionY;
+    
+                                if (distance !== 0) {
+                                    const otherPointVelocityX = points[otherPointStartIndex + 2];
+                                    const otherPointVelocityY = points[otherPointStartIndex + 3];
+    
+                                    const normalizedDirectionX = directionX / distance;
+                                    const normalizedDirectionY = directionY / distance;
+    
+                                    const forceValue = -Math.pow(1 - Math.abs(distance / maxDistance), 3);
+                                    const antiForceValue = Math.pow(Math.abs(distance / maxDistance), 2)
+    
+                                    const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
+                                    const yAccelerationChange = normalizedDirectionY * forceValue * baseForce;
+    
+                                    const xAntiAccelerationChange = normalizedDirectionX * antiForceValue * baseAntiDensityForce;
+                                    const yAntiAccelerationChange = normalizedDirectionY * antiForceValue * baseAntiDensityForce;
+    
+                                    const xViscosityChange = (otherPointVelocityX - pointVelocityX) * -viscosity * forceValue;
+                                    const yViscosityChange = (otherPointVelocityY - pointVelocityY) * -viscosity * forceValue;
+    
+                                    totalAccelerationX += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
+                                    totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
+                                }
                             }
-
-                            const otherPointVelocityX = a[otherPointStartIndex + 2];
-                            const otherPointVelocityY = a[otherPointStartIndex + 3];
-
-                            const normalizedDirectionX = directionX / distance;
-                            const normalizedDirectionY = directionY / distance;
-
-                            const forceValue = -Math.pow(1 - Math.abs(distance / maxDistance), 3);
-                            const antiForceValue = Math.pow(Math.abs(distance / maxDistance), 2)
-
-                            const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
-                            const yAccelerationChange = normalizedDirectionY * forceValue * baseForce;
-
-                            const xAntiAccelerationChange = normalizedDirectionX * antiForceValue * baseAntiDensityForce;
-                            const yAntiAccelerationChange = normalizedDirectionY * antiForceValue * baseAntiDensityForce;
-
-                            const xViscosityChange = (otherPointVelocityX - pointVelocityX) * -viscosity * forceValue;
-                            const yViscosityChange = (otherPointVelocityY - pointVelocityY) * -viscosity * forceValue;
-
-                            totalAccelerationX += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
-                            totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
                         }
                     }
                 }
             }
-
-            i += 1;
         }
 
         return [
@@ -188,17 +194,24 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     const chunksStartingIndicesAndLengthsLength = chunksStartingIndicesAndLengths.length;
 
     const kernelInput = [
-        constants.pointsCount,
-        constants.maxDistance,
-        constants.baseForce,
-        constants.baseAntiDensityForce,
-        constants.viscosity,
-        flattenChunksLength,
-        chunksStartingIndicesAndLengthsLength,
-        ...chunksStartingIndicesAndLengths,
-        ...flattenChunks,
-        ...pointsToFlatArray(points),
-    ] as number[];
+        [
+            constants.pointsCount,
+            constants.maxDistance,
+            constants.baseForce,
+            constants.baseAntiDensityForce,
+            constants.viscosity,
+            flattenChunksLength,
+            chunksStartingIndicesAndLengthsLength,
+            gridWidth,
+            gridHeight,
+        ],
+        [
+            ...chunksStartingIndicesAndLengths,
+            ...flattenChunks,
+        ],
+        pointsToFlatArray(points),
+    ] as number[][];
+
     const kernelResult = getDencityAcceleration(kernelInput);
 
     for (const index in points) {
