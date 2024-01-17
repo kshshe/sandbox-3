@@ -16,19 +16,6 @@ const gpu = new GPUClass({
 }) as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
-        function getForceValue(normalizedDistance: number) {
-            const result = 1 - Math.abs(normalizedDistance);
-            return Math.pow(result, 3);
-        }
-        
-        function getAntiForceValue(normalizedDistance: number) {
-            return Math.pow(Math.abs(normalizedDistance), 2);
-        }
-        
-        function getVectorLength(x: number, y: number) {
-            return Math.sqrt(x * x + y * y);
-        }
-
         const pointsCount = a[0];
         const maxDistance = a[1];
         const baseForce = a[2];
@@ -61,7 +48,9 @@ const getDencityAcceleration = gpu
                     const distanceByY = Math.abs(y - pointPositionY);
 
                     if (distanceByY < maxDistance) {
-                        let distance = getVectorLength(x - pointPositionX, y - pointPositionY)
+                        const xDiff = x - pointPositionX;
+                        const yDiff = y - pointPositionY;
+                        let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
 
                         if (distance <= maxDistance) {
                             closestPointsCount++;
@@ -80,8 +69,8 @@ const getDencityAcceleration = gpu
                             const normalizedDirectionX = directionX / distance;
                             const normalizedDirectionY = directionY / distance;
 
-                            const forceValue = -getForceValue(distance / maxDistance);
-                            const antiForceValue = getAntiForceValue(distance / maxDistance);
+                            const forceValue = -Math.pow(1 - Math.abs(distance / maxDistance), 3);
+                            const antiForceValue = Math.pow(Math.abs(distance / maxDistance), 2)
 
                             const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
                             const yAccelerationChange = normalizedDirectionY * forceValue * baseForce;
