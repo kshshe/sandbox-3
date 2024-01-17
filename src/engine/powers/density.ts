@@ -29,8 +29,9 @@ const getDencityAcceleration = gpu
         const baseAntiDensityForce = a[3];
         const viscosity = a[4];
         const chunksLength = a[5];
+        const chunksStartingIndicesAndLengthsLength = a[6];
 
-        const pointsGlobalStartIndex = 6 + chunksLength;
+        const pointsGlobalStartIndex = 7 + chunksLength + chunksStartingIndicesAndLengthsLength;
         const pointIndex = this.thread.x;
         const pointStartIndex = pointIndex * 4 + pointsGlobalStartIndex;
         const pointPositionX = a[pointStartIndex];
@@ -175,10 +176,18 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         chunks[chunkIndex].push(+pointIndex);
     }
 
-    const flattenChunks = chunks.flat();
+    const chunksStartingIndicesAndLengths: number[] = [];
+    const flattenChunks = chunks.flatMap((chunk) => {
+        const lastChunkIndex = chunksStartingIndicesAndLengths?.[chunksStartingIndicesAndLengths.length - 2] || 0;
+        const lastChunkLength = chunksStartingIndicesAndLengths?.[chunksStartingIndicesAndLengths.length - 1] || 0;
+        const currentChunkStartingIndex = lastChunkIndex + lastChunkLength;
+        chunksStartingIndicesAndLengths.push(currentChunkStartingIndex, chunk.length);
+        return chunk;
+    });
     const flattenChunksLength = flattenChunks.length;
+    const chunksStartingIndicesAndLengthsLength = chunksStartingIndicesAndLengths.length;
 
-    console.log({flattenChunksLength, flattenChunks})
+    console.log({flattenChunksLength, flattenChunks, chunksStartingIndicesAndLengths})
 
     const kernelInput = [
         constants.pointsCount,
@@ -187,6 +196,8 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         constants.baseAntiDensityForce,
         constants.viscosity,
         flattenChunksLength,
+        chunksStartingIndicesAndLengthsLength,
+        ...chunksStartingIndicesAndLengths,
         ...flattenChunks,
         ...pointsToFlatArray(points),
     ] as number[];
