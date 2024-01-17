@@ -3,7 +3,8 @@ import { pointsToFlatArray } from '../utils/pointsToFlatArray';
 
 import { GPU } from '../../gpu.d'
 import { initControl } from "../controls";
-import { INITIAL_POINTS_COUNT, MAX_POINTS_COUNT } from "../constants";
+import { BORDERS, INITIAL_POINTS_COUNT, MAX_POINTS_COUNT } from "../constants";
+import { TPoint } from "../data.t";
 
 // @ts-ignore
 const GPUClass = (window.GPU?.GPU || window.GPU);
@@ -16,13 +17,20 @@ const gpu = new GPUClass({
 }) as GPU;
 const getDencityAcceleration = gpu
     .createKernel(function(a: number[]) {
+        function getChunkIndex(x: number, y: number, gridWidth: number, maxDistance: number) {
+            const chunkX = Math.floor(x / maxDistance);
+            const chunkY = Math.floor(y / maxDistance);
+            return chunkX + chunkY * gridWidth;
+        }
+
         const pointsCount = a[0];
         const maxDistance = a[1];
         const baseForce = a[2];
         const baseAntiDensityForce = a[3];
         const viscosity = a[4];
+        const chunksLength = a[5];
 
-        const pointsGlobalStartIndex = 5;
+        const pointsGlobalStartIndex = 6 + chunksLength;
         const pointIndex = this.thread.x;
         const pointStartIndex = pointIndex * 4 + pointsGlobalStartIndex;
         const pointPositionX = a[pointStartIndex];
@@ -145,14 +153,44 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         constants.pointsCount = neededSize;
     }
 
+    const gridWidth = Math.ceil(BORDERS.maxX / constants.maxDistance);
+    const gridHeight = Math.ceil(BORDERS.maxY / constants.maxDistance);
+
+    const chunksLength = gridWidth * gridHeight;
+    const chunks: number[][] = new Array(chunksLength).fill(null).map(() => []);
+
+    const getChunkIndex = (point: TPoint) => {
+        const chunkX = Math.floor(point.position.x / constants.maxDistance);
+        const chunkY = Math.floor(point.position.y / constants.maxDistance);
+        return chunkX + chunkY * gridWidth;
+    }
+
+    for (const pointIndex in points) {
+        const point = points[pointIndex];
+        const chunkIndex = getChunkIndex(point);
+        if (!chunks[chunkIndex]) {
+            chunks[chunkIndex] = [];
+        }
+
+        chunks[chunkIndex].push(+pointIndex);
+    }
+
+    const flattenChunks = chunks.flat();
+    const flattenChunksLength = flattenChunks.length;
+
+    console.log({flattenChunksLength, flattenChunks})
+
     const kernelInput = [
         constants.pointsCount,
         constants.maxDistance,
         constants.baseForce,
         constants.baseAntiDensityForce,
         constants.viscosity,
+        flattenChunksLength,
+        ...flattenChunks,
         ...pointsToFlatArray(points),
     ] as number[];
+    console.log({chunks, kernelInput})
     const kernelResult = getDencityAcceleration(kernelInput);
 
     for (const index in points) {
