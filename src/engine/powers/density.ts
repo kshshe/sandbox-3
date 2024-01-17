@@ -58,17 +58,23 @@ const getDencityAcceleration = function(config: number[], chunksAndChunksStartin
     
                             const x = points[otherPointStartIndex];
                             const y = points[otherPointStartIndex + 1];
-    
-                            const xDiff = x - pointPositionX;
-                            const yDiff = y - pointPositionY;
-                            let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
-    
-                            if (distance <= maxDistance) {
-                                closestPointsCount++;
-                                let directionX = x - pointPositionX;
-                                let directionY = y - pointPositionY;
-    
-                                if (distance !== 0) {
+
+                            if (otherPointStartIndex !== pointStartIndex) {
+                                const xDiff = x - pointPositionX;
+                                const yDiff = y - pointPositionY;
+                                let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
+        
+                                if (distance <= maxDistance) {
+                                    closestPointsCount++;
+                                    let directionX = x - pointPositionX;
+                                    let directionY = y - pointPositionY;
+        
+                                    if (distance === 0) {
+                                        directionX = 0.00003 * (Math.random() - 0.5);
+                                        directionY = 0.00003 * (Math.random() - 0.5);
+                                        distance = Math.sqrt(directionX * directionX + directionY * directionY);
+                                    }
+                                
                                     const otherPointVelocityX = points[otherPointStartIndex + 2];
                                     const otherPointVelocityY = points[otherPointStartIndex + 3];
     
