@@ -12,11 +12,10 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 console.log({ GPUClass })
 
 // @ts-ignore
-const gpu = new GPUClass({
-    mode: 'gpu',
-}) as GPU;
-const getDencityAcceleration = gpu
-    .createKernel(function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
+// const gpu = new GPUClass({
+//     mode: 'cpu',
+// }) as GPU;
+const getDencityAcceleration = function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
         // const pointsCount = config[0];
         const maxDistance = config[1];
         const baseForce = config[2];
@@ -103,17 +102,17 @@ const getDencityAcceleration = gpu
             totalAccelerationY,
             closestPointsCount,
         ];
-    })
-    // @ts-ignore
-    .setArgumentTypes([
-        'Array', // config
-        'Array', // chunks and chunksStartingIndicesAndLengths
-        'Array', // points
-    ])
-    .setOutput([INITIAL_POINTS_COUNT])
-    .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
-    .setDynamicOutput(true)
-    .setDynamicArguments(true)
+    }//)
+    // // @ts-ignore
+    // .setArgumentTypes([
+    //     'Array', // config
+    //     'Array', // chunks and chunksStartingIndicesAndLengths
+    //     'Array', // points
+    // ])
+    // .setOutput([INITIAL_POINTS_COUNT])
+    // .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
+    // .setDynamicOutput(true)
+    // .setDynamicArguments(true)
 
 // @ts-ignore
 window.getDencityAcceleration = getDencityAcceleration;
@@ -149,14 +148,14 @@ initRangeControl('input#viscosity-power', 'viscosity');
 initRangeControl('input#influence-radius', 'maxDistance');
 
 export const densityProcessor: TPowerProcessorParallel = (points) => {
-    const kernelOutputSize = getDencityAcceleration.output[0];
-    const neededSize = points.length;
-    if (kernelOutputSize != neededSize) {
-        getDencityAcceleration
-            .setOutput([neededSize])       
+    // const kernelOutputSize = getDencityAcceleration.output[0];
+    // const neededSize = points.length;
+    // if (kernelOutputSize != neededSize) {
+    //     getDencityAcceleration
+    //         .setOutput([neededSize])       
 
-        constants.pointsCount = neededSize;
-    }
+    //     constants.pointsCount = neededSize;
+    // }
 
     const gridWidth = Math.ceil(BORDERS.maxX / constants.maxDistance);
     const gridHeight = Math.ceil(BORDERS.maxY / constants.maxDistance);
@@ -210,7 +209,17 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         pointsToFlatArray(points),
     ] as number[][];
 
-    const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number][];
+    // const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number][];
+
+    const kernelResult = points.map((point, pointIndex) => {
+        const resultForThePoint = getDencityAcceleration.call({
+            thread: {
+                x: pointIndex,
+            }
+        }, kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number];
+
+        return resultForThePoint;
+    })
 
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number, number];
