@@ -13,24 +13,16 @@ console.log({ GPUClass })
 
 // @ts-ignore
 const gpu = new GPUClass({
-    mode: 'cpu',
+    mode: 'gpu',
 }) as GPU;
 const getDencityAcceleration = gpu
-    .createKernel(function(data: [
-        number[], // config
-        number[], // chunks and chunksStartingIndicesAndLengths
-        number[], // points
-    ]) {
-        const config = data[0];
-        const chunksAndChunksStartingIndicesAndLengths = data[1];
-        const points = data[2];
-
-        const pointsCount = config[0];
+    .createKernel(function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
+        // const pointsCount = config[0];
         const maxDistance = config[1];
         const baseForce = config[2];
         const baseAntiDensityForce = config[3];
         const viscosity = config[4];
-        const chunksLength = config[5];
+        // const chunksLength = config[5];
         const chunksStartingIndicesAndLengthsLength = config[6];
         const gridWidth = config[7]
         const gridHeight = config[8];
@@ -112,6 +104,12 @@ const getDencityAcceleration = gpu
             closestPointsCount,
         ];
     })
+    // @ts-ignore
+    .setArgumentTypes([
+        'Array', // config
+        'Array', // chunks and chunksStartingIndicesAndLengths
+        'Array', // points
+    ])
     .setOutput([INITIAL_POINTS_COUNT])
     .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
     .setDynamicOutput(true)
@@ -212,7 +210,7 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         pointsToFlatArray(points),
     ] as number[][];
 
-    const kernelResult = getDencityAcceleration(kernelInput);
+    const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number][];
 
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number, number];
