@@ -187,8 +187,6 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     const flattenChunksLength = flattenChunks.length;
     const chunksStartingIndicesAndLengthsLength = chunksStartingIndicesAndLengths.length;
 
-    console.log({flattenChunksLength, flattenChunks, chunksStartingIndicesAndLengths})
-
     const kernelInput = [
         constants.pointsCount,
         constants.maxDistance,
@@ -201,7 +199,6 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         ...flattenChunks,
         ...pointsToFlatArray(points),
     ] as number[];
-    console.log({chunks, kernelInput})
     const kernelResult = getDencityAcceleration(kernelInput);
 
     for (const index in points) {
