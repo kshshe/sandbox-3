@@ -68,7 +68,7 @@ export const initRender = () => {
             .filter(({ condition }) => condition)
 
             const dataParts = [
-                `Точек: ${pointsInMouseRadius.length}`,
+                `Points: ${pointsInMouseRadius.length}`,
                 pointsInMouseRadius.length < 5 && pointsInMouseRadius.map(({
                     point,
                     pointIndex,
