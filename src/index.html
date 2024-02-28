@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Sandbox</title>
+  <title>Sandbox (new)</title>
   <link rel="stylesheet" href="global.scss">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
@@ -14,46 +14,48 @@
   <div class="controls">
     <label>
       <input type="checkbox" id="density" name="density" checked />
-      Давление
+      Use Density
     </label>
 
     <label>
       <input type="checkbox" id="gravity" name="gravity" />
-      Гравитация
+      Use Gravity
     </label>
+
+    <hr>
 
     <label>
       <select id="gravityDirection">
-        <option value="left">Влево</option>
-        <option value="right">Вправо</option>
-        <option value="top">Вверх</option>
-        <option value="bottom" selected>Вниз</option>
-        <option value="center">В центр</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+        <option value="top">Top</option>
+        <option value="bottom" selected>Bottom</option>
+        <option value="center">Center</option>
       </select>
     </label>
 
-    <label>
+    <!-- <label>
       <input 
         type="checkbox" 
         id="collision" 
         name="collision" 
       />
-      Столкновения
-    </label>
+      Collision
+    </label> -->
 
     <label>
       <input type="checkbox" id="custom-sizes" name="custom-sizes" />
-      Размеры точек
+      Render big points
     </label>
 
     <label>
       <input type="checkbox" id="show-arrows" name="show-arrows" />
-      Показывать ускорение
+      Show acceleration
     </label>
 
     <label>
       <input type="checkbox" id="show-arrows-2" name="show-arrows-2" />
-      Показывать скорость
+      Show velocity
     </label>
 
     <label>
@@ -67,7 +69,7 @@
 
     <label>
       <div>
-        Скорость
+        Simulation speed
       </div>
       <input type="range" id="speed"
         name="speed" min="1" max="100" value="70"
@@ -76,7 +78,7 @@
 
     <label id="gravityPowerLabel">
       <div>
-        Сила притяжения
+        Gravity power
       </div>
       <input type="range" id="gravityPower"
         name="gravityPower" min="1" max="200" value="98"
@@ -85,7 +87,7 @@
 
     <label>
       <div>
-        Количество точек
+        Points count
       </div>
       <input type="range" id="count"
         name="count" min="1" max="10000" value="1000"
@@ -94,7 +96,7 @@
 
     <label>
       <div>
-        Давление
+        Density
       </div>
       <input type="range" id="dencity-power"
         name="dencity-power" min="0" max="200" value="40"
@@ -103,7 +105,7 @@
 
     <label>
       <div>
-        Анти-давление
+        Anti-Density
       </div>
       <input type="range" id="anti-dencity-power"
         name="anti-dencity-power" min="0" max="50" value="1"
@@ -112,7 +114,7 @@
 
     <label>
       <div>
-        Вязкость
+        Viscosity
       </div>
       <input type="range" id="viscosity-power"
         name="viscosity-power" min="0" max="9" value="5"
@@ -121,7 +123,7 @@
 
     <label>
       <div>
-        Влияние
+        Influence radius
       </div>
       <input type="range" id="influence-radius"
         name="influence-radius" min="0" max="330" value="40"
@@ -130,7 +132,7 @@
 
     <label>
       <div>
-        Торможение
+        Friction
       </div>
       <input type="range" id="slowdown-power"
         name="slowdown-power" min="1" max="1000" value="999"
