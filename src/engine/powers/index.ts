@@ -13,6 +13,7 @@ const availablePowers: Record<string, TPowerProcessor> = {
 
 export const powers: Array<TPowerProcessor> = [
     densityProcessor,
+    gravityProcessor,
     mouseProcessor,
 ];
 

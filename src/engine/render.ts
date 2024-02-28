@@ -5,7 +5,7 @@ import { setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
 import { getVectorLength } from "./utils/vector";
 
-let customSizes = false;
+let customSizes = true;
 let showArrows = false;
 let showSpeedArrows = false;
 let TARGET_FPS = 45;
