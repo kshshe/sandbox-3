@@ -6,6 +6,23 @@ body {
     font-size: 14px;
 }
 
+.hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 6px;
+
+    svg {
+        width: 17px;
+        height: 17px;
+
+        path {
+            fill: #fff;
+        }
+    }
+}
+
 canvas {
     position: fixed;
     top: 0;
