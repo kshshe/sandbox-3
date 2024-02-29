@@ -136,6 +136,11 @@ const inputModifiers = {
 }
 
 const initRangeControl = (selector: string, constantKey: string) => {
+    const input = document.querySelector(selector) as HTMLInputElement;
+    if (!input) {
+        return
+    }
+
     initControl(selector, (e) => {
         const input = e.target as HTMLInputElement;
         const modifier = inputModifiers[constantKey] || 1;
@@ -143,8 +148,6 @@ const initRangeControl = (selector: string, constantKey: string) => {
         console.log(`Set ${constantKey} to ${value}`)
         constants[constantKey] = value;
     });
-
-    const input = document.querySelector(selector) as HTMLInputElement;
     input.value = `${constants[constantKey]}`;
 }
 
