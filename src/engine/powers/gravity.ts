@@ -52,23 +52,22 @@ const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-setTimeout(() => {
+const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
+if (gravityInput) {
     try {
-        if (
-            DeviceMotionEvent &&
-            // @ts-ignore
-            typeof DeviceMotionEvent.requestPermission === "function" &&
-            isSecureContext
-        ) {
-            const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
-            if (gravityInput) {
+        gravityInput.addEventListener('click', () => {
+            console.log(gravityInput.value)
+            if (
+                DeviceMotionEvent &&
+                // @ts-ignore
+                typeof DeviceMotionEvent.requestPermission === "function" &&
+                isSecureContext
+            ) {
                 const newOption = document.createElement('option');
                 newOption.value = 'motion';
                 newOption.textContent = 'Accelerometer';
                 gravityInput.appendChild(newOption);
-            }
 
-            gravityInput.addEventListener('click', () => {
                 console.log(gravityInput.value)
                 try {
                     // @ts-ignore
@@ -77,14 +76,14 @@ setTimeout(() => {
                 } catch (e) {
                     console.log(e.message || e.toString())
                 }
-            })
 
-            window.addEventListener("devicemotion", handleMotion, true);
-        }
+                window.addEventListener("devicemotion", handleMotion, true);
+            }
+        })
     } catch (e) {
         console.log(e.message || e.toString())
     }
-}, 1000)
+}
 
 const CENTER_OF_THE_SCREEN: TVector = {
     x: BORDERS.maxX / 2,
