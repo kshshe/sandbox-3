@@ -52,33 +52,39 @@ const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-if (
-    DeviceMotionEvent &&
-    // @ts-ignore
-    typeof DeviceMotionEvent.requestPermission === "function" &&
-    isSecureContext
-) {
-    const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
-    if (gravityInput) {
-        const newOption = document.createElement('option');
-        newOption.value = 'motion';
-        newOption.textContent = 'Accelerometer';
-        gravityInput.appendChild(newOption);
-    }
-
-    gravityInput.addEventListener('click', () => {
-        console.log(gravityInput.value)
-        try {
+setTimeout(() => {
+    try {
+        if (
+            DeviceMotionEvent &&
             // @ts-ignore
-            await DeviceMotionEvent.requestPermission();
-            console.log('Motion permission granted')
-        } catch (e) {
-            console.log(e.message || e.toString())
-        }
-    })
+            typeof DeviceMotionEvent.requestPermission === "function" &&
+            isSecureContext
+        ) {
+            const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
+            if (gravityInput) {
+                const newOption = document.createElement('option');
+                newOption.value = 'motion';
+                newOption.textContent = 'Accelerometer';
+                gravityInput.appendChild(newOption);
+            }
 
-    window.addEventListener("devicemotion", handleMotion, true);
-}
+            gravityInput.addEventListener('click', () => {
+                console.log(gravityInput.value)
+                try {
+                    // @ts-ignore
+                    await DeviceMotionEvent.requestPermission();
+                    console.log('Motion permission granted')
+                } catch (e) {
+                    console.log(e.message || e.toString())
+                }
+            })
+
+            window.addEventListener("devicemotion", handleMotion, true);
+        }
+    } catch (e) {
+        console.log(e.message || e.toString())
+    }
+}, 1000)
 
 const CENTER_OF_THE_SCREEN: TVector = {
     x: BORDERS.maxX / 2,
