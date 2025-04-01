@@ -18,16 +18,6 @@ initControl('select#gravityDirection', async (e) => {
     isTop = (e.target as HTMLInputElement)?.value === 'top'
     isMotion = (e.target as HTMLInputElement)?.value === 'motion'
 
-    if (isMotion) {
-        try {
-            // @ts-ignore
-            await DeviceMotionEvent.requestPermission();
-            console.log('Motion permission granted')
-        } catch (e) {
-            console.log(e.message || e.toString())
-        }
-    }
-
     console.log({
         isCentered,
         isLeft,
@@ -69,15 +59,26 @@ if (
     isSecureContext
 ) {
     const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
-    if (gravityInput) { 
+    if (gravityInput) {
         const newOption = document.createElement('option');
         newOption.value = 'motion';
         newOption.textContent = 'Accelerometer';
         gravityInput.appendChild(newOption);
     }
-}
 
-window.addEventListener("devicemotion", handleMotion, true);
+    gravityInput.addEventListener('click', () => {
+        console.log(gravityInput.value)
+        try {
+            // @ts-ignore
+            await DeviceMotionEvent.requestPermission();
+            console.log('Motion permission granted')
+        } catch (e) {
+            console.log(e.message || e.toString())
+        }
+    })
+
+    window.addEventListener("devicemotion", handleMotion, true);
+}
 
 const CENTER_OF_THE_SCREEN: TVector = {
     x: BORDERS.maxX / 2,
