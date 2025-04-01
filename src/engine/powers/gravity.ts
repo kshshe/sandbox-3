@@ -55,7 +55,7 @@ const getAccelerometerDirection = (): TVector => {
 const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
 if (gravityInput) {
     try {
-        gravityInput.addEventListener('click', () => {
+        gravityInput.addEventListener('click', async () => {
             console.log(gravityInput.value)
             if (
                 typeof DeviceMotionEvent !== 'undefined' &&
