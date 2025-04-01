@@ -5,16 +5,10 @@ import { setMousePosition } from "./powers/mouse";
 import { points } from "./runner";
 import { getVectorLength } from "./utils/vector";
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isIOS = /iPad|iPhone/.test(navigator.userAgent);
-
-let customSizes = !isIOS && !isSafari;
+let customSizes = true;
 let showArrows = false;
 let showSpeedArrows = false;
 let TARGET_FPS = 45;
-
-const customSizesInput = document.querySelector('input#custom-sizes') as HTMLInputElement;
-customSizesInput.checked = customSizes;
 
 initControl('input#maxFps', (e) => {
     const input = e.target as HTMLInputElement;
@@ -22,11 +16,6 @@ initControl('input#maxFps', (e) => {
 })
 
 initControl('input#custom-sizes', (e) => {
-    if (isIOS || isSafari) {
-        alert('This feature is not supported on iOS or Safari');
-        customSizesInput.checked = false;
-        return;
-    }
     const input = e.target as HTMLInputElement;
     customSizes = input.checked;
 })

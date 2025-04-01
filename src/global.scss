@@ -30,7 +30,8 @@ canvas {
     cursor: none;
 
     &.filtered {
-        filter: drop-shadow(0 0 600px #fff) blur(9px) brightness(4) contrast(10000);
+        filter: blur(9px) brightness(4) contrast(200);
+        background: rgba(255, 255, 255, 0.3);
     }
 }
 
