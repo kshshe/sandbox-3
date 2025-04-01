@@ -9,20 +9,38 @@ let isCentered = false
 let isLeft = false
 let isRight = false
 let isTop = false
+let isMotion = false
 
-initControl('select#gravityDirection', (e) => {
+initControl('select#gravityDirection', async (e) => {
     isCentered = (e.target as HTMLInputElement)?.value === 'center'
     isLeft = (e.target as HTMLInputElement)?.value === 'left'
     isRight = (e.target as HTMLInputElement)?.value === 'right'
     isTop = (e.target as HTMLInputElement)?.value === 'top'
+    isMotion = (e.target as HTMLInputElement)?.value === 'motion'
+
+    if (isMotion) {
+        try {
+            // @ts-ignore
+            await DeviceMotionEvent.requestPermission();
+            console.log('Motion permission granted')
+        } catch (e) {
+            console.log(e.message || e.toString())
+        }
+    }
 
     console.log({
         isCentered,
         isLeft,
         isRight,
-        isTop
+        isTop,
+        isMotion
     })
 })
+
+const currentMotionSensor = {
+    x: 0,
+    y: GRAVITY_ACCELERATION
+}
 
 let currentAcceleration: TVector = {
     x: 0,
@@ -35,29 +53,29 @@ initControl('input#gravityPower', (e) => {
 })
 
 function handleMotion(event) {
-    currentAcceleration.x = +event.accelerationIncludingGravity.x || 0;
-    currentAcceleration.y = -event.accelerationIncludingGravity.y || GRAVITY_ACCELERATION;
+    currentMotionSensor.x = +event.accelerationIncludingGravity.x || 0;
+    currentMotionSensor.y = -event.accelerationIncludingGravity.y || 0;
+    console.log(currentMotionSensor)
 }
 
 const getAccelerometerDirection = (): TVector => {
     return currentAcceleration
 }
 
-document.querySelector('input#gravityDirection')?.addEventListener('click', async () => {
-    if (
-        DeviceMotionEvent &&
-        // @ts-ignore
-        typeof DeviceMotionEvent.requestPermission === "function"
-    ) {
-        try {
-            // @ts-ignore
-            await DeviceMotionEvent.requestPermission();
-            document.querySelector('.gravityPowerLabel')?.remove()
-        } catch (e) {
-            console.log(e.message || e.toString())
-        }
+if (
+    DeviceMotionEvent &&
+    // @ts-ignore
+    typeof DeviceMotionEvent.requestPermission === "function" &&
+    isSecureContext
+) {
+    const gravityInput = document.querySelector('select#gravityDirection') as HTMLInputElement;
+    if (gravityInput) { 
+        const newOption = document.createElement('option');
+        newOption.value = 'motion';
+        newOption.textContent = 'Accelerometer';
+        gravityInput.appendChild(newOption);
     }
-})
+}
 
 window.addEventListener("devicemotion", handleMotion, true);
 
@@ -81,6 +99,11 @@ export const gravityProcessor: TPowerProcessor = (point) => {
 
         point.acceleration.x += gravityForce.x
         point.acceleration.y += gravityForce.y
+        return
+    }
+    if (isMotion) {
+        point.acceleration.x += currentMotionSensor.x
+        point.acceleration.y += currentMotionSensor.y
         return
     }
 
