@@ -63,21 +63,21 @@ if (gravityInput) {
                 typeof DeviceMotionEvent.requestPermission === "function" &&
                 isSecureContext
             ) {
-                const newOption = document.createElement('option');
-                newOption.value = 'motion';
-                newOption.textContent = 'Accelerometer';
-                gravityInput.appendChild(newOption);
-
                 console.log(gravityInput.value)
                 try {
                     // @ts-ignore
                     await DeviceMotionEvent.requestPermission();
                     console.log('Motion permission granted')
+                    
+                    window.addEventListener("devicemotion", handleMotion, true);
+
+                    const newOption = document.createElement('option');
+                    newOption.value = 'motion';
+                    newOption.textContent = 'Accelerometer';
+                    gravityInput.appendChild(newOption);
                 } catch (e) {
                     console.log(e.message || e.toString())
                 }
-
-                window.addEventListener("devicemotion", handleMotion, true);
             }
         })
     } catch (e) {
