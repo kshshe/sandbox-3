@@ -12,10 +12,8 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 console.log({ GPUClass })
 
 // @ts-ignore
-// const gpu = new GPUClass({
-//     mode: 'cpu',
-// }) as GPU;
-const getDencityAcceleration = function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
+const gpu = new GPUClass() as GPU;
+const getDencityAcceleration = gpu.createKernel(function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
         // const pointsCount = config[0];
         const maxDistance = config[1];
         const baseForce = config[2];
@@ -38,8 +36,6 @@ const getDencityAcceleration = function(config: number[], chunksAndChunksStartin
         
         let totalAccelerationX = 0;
         let totalAccelerationY = 0;
-
-        let closestPointsCount = 0;
 
         for (let xChunkDiff = -1; xChunkDiff <= 1; xChunkDiff++) {
             for (let yChunkDiff = -1; yChunkDiff <= 1; yChunkDiff++) {
@@ -65,7 +61,6 @@ const getDencityAcceleration = function(config: number[], chunksAndChunksStartin
                                 let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
         
                                 if (distance <= maxDistance) {
-                                    closestPointsCount++;
                                     let directionX = x - pointPositionX;
                                     let directionY = y - pointPositionY;
         
@@ -106,19 +101,18 @@ const getDencityAcceleration = function(config: number[], chunksAndChunksStartin
         return [
             totalAccelerationX,
             totalAccelerationY,
-            closestPointsCount,
         ];
-    }//)
-    // // @ts-ignore
-    // .setArgumentTypes([
-    //     'Array', // config
-    //     'Array', // chunks and chunksStartingIndicesAndLengths
-    //     'Array', // points
-    // ])
-    // .setOutput([INITIAL_POINTS_COUNT])
-    // .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
-    // .setDynamicOutput(true)
-    // .setDynamicArguments(true)
+    })
+    // @ts-ignore
+    .setArgumentTypes([
+        'Array', // config
+        'Array', // chunks and chunksStartingIndicesAndLengths
+        'Array', // points
+    ])
+    .setOutput([INITIAL_POINTS_COUNT])
+    .setLoopMaxIterations(MAX_POINTS_COUNT + 1)
+    .setDynamicOutput(true)
+    .setDynamicArguments(true)
 
 // @ts-ignore
 window.getDencityAcceleration = getDencityAcceleration;
@@ -157,14 +151,14 @@ initRangeControl('input#viscosity-power', 'viscosity');
 initRangeControl('input#influence-radius', 'maxDistance');
 
 export const densityProcessor: TPowerProcessorParallel = (points) => {
-    // const kernelOutputSize = getDencityAcceleration.output[0];
-    // const neededSize = points.length;
-    // if (kernelOutputSize != neededSize) {
-    //     getDencityAcceleration
-    //         .setOutput([neededSize])       
+    const kernelOutputSize = getDencityAcceleration.output[0];
+    const neededSize = points.length;
+    if (kernelOutputSize != neededSize) {
+        getDencityAcceleration
+            .setOutput([neededSize])       
 
-    //     constants.pointsCount = neededSize;
-    // }
+        constants.pointsCount = neededSize;
+    }
 
     const gridWidth = Math.ceil(BORDERS.maxX / constants.maxDistance);
     const gridHeight = Math.ceil(BORDERS.maxY / constants.maxDistance);
@@ -218,24 +212,13 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         pointsToFlatArray(points),
     ] as number[][];
 
-    // const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number][];
-
-    const kernelResult = points.map((point, pointIndex) => {
-        const resultForThePoint = getDencityAcceleration.call({
-            thread: {
-                x: pointIndex,
-            }
-        }, kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number, number];
-
-        return resultForThePoint;
-    })
+    const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number][];
 
     for (const index in points) {
-        const pointAcceleration = kernelResult[index] as [number, number, number];
+        const pointAcceleration = kernelResult[index] as [number, number];
         const point = points[index];
         point.acceleration.x += pointAcceleration[0];
         point.acceleration.y += pointAcceleration[1];
-        point.temporaryData.closestPointsCount = pointAcceleration[2];
     }
 }
 

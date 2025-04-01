@@ -186,18 +186,22 @@ export const initRender = () => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-        // Draw points
-        points.forEach((point, pointIn) => {
-            const size = !customSizes ? 4 : Math.max(6, Math.min(point.temporaryData.closestPointsCount / 2, 20));
-            const velocity = getVectorLength(point.velocity);
-            const normalizedVelocity = Math.min(velocity / 20, 1);
-            const color = `rgb(${255 * normalizedVelocity}, 0, ${255 * (1 - normalizedVelocity)})`;
+        const size = customSizes ? 30 : 4;
+        const color = `rgb(0, 0, 255)`;
 
-            ctx.beginPath();
-            ctx.rect(point.position.x - size / 2, point.position.y - size / 2, size, size);
+        // Draw points
+        points.forEach((point) => {
+            const x = point.position.x - size / 2;
+            const y = point.position.y - size / 2;
             ctx.fillStyle = color;
-            ctx.fill();
+            ctx.fillRect(x, y, size, size);
         });
+
+        if (customSizes) {
+            canvas.classList.add('filtered');
+        } else {
+            canvas.classList.remove('filtered');
+        }
         
         if (showArrows) {
             // reg arrows to represent acceleration

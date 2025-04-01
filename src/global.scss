@@ -28,6 +28,10 @@ canvas {
     top: 0;
     left: 0;
     cursor: none;
+
+    &.filtered {
+        filter: drop-shadow(0 0 600px #fff) blur(9px) brightness(4) contrast(10000);
+    }
 }
 
 .controls {
