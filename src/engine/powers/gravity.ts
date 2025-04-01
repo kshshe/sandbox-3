@@ -58,7 +58,7 @@ if (gravityInput) {
         gravityInput.addEventListener('click', () => {
             console.log(gravityInput.value)
             if (
-                DeviceMotionEvent &&
+                typeof DeviceMotionEvent !== 'undefined' &&
                 // @ts-ignore
                 typeof DeviceMotionEvent.requestPermission === "function" &&
                 isSecureContext
