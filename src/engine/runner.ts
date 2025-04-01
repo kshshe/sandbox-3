@@ -54,6 +54,12 @@ for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
     points.push(getNewPoint(x, y));
 }
 
+const countInput = document.querySelector('input#count') as HTMLInputElement;
+
+if (countInput) {
+    countInput.value = INITIAL_POINTS_COUNT.toString();
+}
+
 initControl('input#count', (e) => {
     const newCount = parseInt((e.target as HTMLInputElement).value);
     if (newCount > points.length) {
