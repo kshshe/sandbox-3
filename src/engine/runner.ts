@@ -189,11 +189,13 @@ const step = () => {
     }
 
     for (const point of points) {
-        if (isNaN(point.velocity.x) || isNaN(point.velocity.y)) {
-            console.count('NaN velocity')
-            // console.log(point)
-            // debugger
+        if (isNaN(point.velocity.x)) {
+            console.count('NaN velocity X')
             point.velocity.x = point.velocity.x || 0;
+        }
+
+        if (isNaN(point.velocity.y)) {
+            console.count('NaN velocity Y')
             point.velocity.y = point.velocity.y || 0;
         }
 

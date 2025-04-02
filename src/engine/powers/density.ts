@@ -11,7 +11,7 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 
 console.log({ GPUClass })
 
-const MAX_ACCELERATION = 1200;
+const MAX_ACCELERATION = 900;
 
 // @ts-ignore
 const gpu = new GPUClass() as GPU;
@@ -234,9 +234,8 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
         point.acceleration.x += pointAcceleration[0] * factor;
         point.acceleration.y += pointAcceleration[1] * factor;
 
-        const accelerationMagnitude = Math.sqrt(pointAcceleration[0] * pointAcceleration[0] + pointAcceleration[1] * pointAcceleration[1]);
-        if (accelerationMagnitude > maxAcceleration) {
-            maxAcceleration = accelerationMagnitude;
+        if (length > maxAcceleration) {
+            maxAcceleration = length;
         }
     }
 
