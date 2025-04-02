@@ -36,6 +36,12 @@ export const initRender = () => {
     canvas.height = BORDERS.maxY;
     document.body.appendChild(canvas);
 
+    const overlayCanvas = document.createElement("canvas");
+    overlayCanvas.width = BORDERS.maxX;
+    overlayCanvas.height = BORDERS.maxY;
+    overlayCanvas.style.pointerEvents = 'none';
+    document.body.appendChild(overlayCanvas);
+
     let currentMousePosition: TVector | null = null;
     let isPressed = false;
 
@@ -65,7 +71,7 @@ export const initRender = () => {
                     pointIndex,
                 };
             })
-            .filter(({ condition }) => condition)
+                .filter(({ condition }) => condition)
 
             const dataParts = [
                 `Points: ${pointsInMouseRadius.length}`,
@@ -132,7 +138,7 @@ export const initRender = () => {
         setMousePosition(null);
         isPressed = false;
     })
-    
+
     canvas.addEventListener("touchmove", (event) => {
         const touch = event.touches[0];
         const pixelX = touch.clientX;
@@ -169,9 +175,14 @@ export const initRender = () => {
     });
 
     const ctx = canvas.getContext('2d');
+    const overlayCtx = overlayCanvas.getContext('2d');
 
     if (!ctx) {
         throw new Error("Can't get canvas context");
+    }
+
+    if (!overlayCtx) {
+        throw new Error("Can't get overlay canvas context");
     }
 
     let lastFrameTime = Date.now();
@@ -189,8 +200,10 @@ export const initRender = () => {
         const size = customSizes ? 30 : 4;
         const color = `rgb(0, 0, 255)`;
 
+        const nonStaticPoints = points.filter(point => !point.isStatic);
+
         // Draw points
-        points.forEach((point) => {
+        nonStaticPoints.forEach((point) => {
             const x = point.position.x - size / 2;
             const y = point.position.y - size / 2;
             ctx.fillStyle = color;
@@ -202,10 +215,10 @@ export const initRender = () => {
         } else {
             canvas.classList.remove('filtered');
         }
-        
+
         if (showArrows) {
             // reg arrows to represent acceleration
-            points.forEach(point => {
+            nonStaticPoints.forEach(point => {
                 const color = `rgb(200, 0, 0)`;
                 ctx.beginPath();
                 ctx.moveTo(point.position.x, point.position.y);
@@ -216,7 +229,7 @@ export const initRender = () => {
         }
 
         if (showSpeedArrows) {
-            points.forEach(point => {
+            nonStaticPoints.forEach(point => {
                 const color = `rgb(0, 0, 200)`;
                 ctx.beginPath();
                 ctx.moveTo(point.position.x, point.position.y);
@@ -225,6 +238,17 @@ export const initRender = () => {
                 ctx.stroke();
             });
         }
+
+        const staticPoints = points.filter(point => point.isStatic);
+
+        staticPoints.forEach(point => {
+            overlayCtx.fillStyle = `rgb(0, 0, 0)`;
+            overlayCtx.fillRect(point.position.x, point.position.y, 10, 10);
+            if (customSizes) {
+                ctx.fillStyle = `rgb(0, 0, 0)`;
+                ctx.fillRect(point.position.x, point.position.y, 10, 10);
+            }
+        });
 
         lastFrameTime = now;
 

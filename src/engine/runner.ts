@@ -20,7 +20,8 @@ declare global {
 window.points = points;
 window.getAverageSpeed = () => {
     let sum = 0;
-    for (const point of points) {
+    const nonStaticPoints = points.filter(point => !point.isStatic);
+    for (const point of nonStaticPoints) {
         sum += getVectorLength(point.velocity);
     }
     return sum / points.length;
@@ -28,7 +29,7 @@ window.getAverageSpeed = () => {
 
 const REFLECTION = 0.45;
 
-const getNewPoint = (x?: number, y?: number): TPoint => ({
+const getNewPoint = (x?: number, y?: number, isStatic?: boolean): TPoint => ({
     position: {
         x: x || (Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX),
         y: y || (Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY),
@@ -42,11 +43,37 @@ const getNewPoint = (x?: number, y?: number): TPoint => ({
         y: 0,
     },
     temporaryData: {},
+    isStatic,
 });
 
 for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
     points.push(getNewPoint());
 }
+
+// draw a static square in the middle of the screen
+const width = window.innerWidth / 4
+const height = window.innerHeight / 4
+const x = window.innerWidth / 2 - width / 2
+const y = window.innerHeight / 2 - height / 2
+
+// bottom line
+for (let i = 0; i < width; i++) {
+    points.push(getNewPoint(x + i, y + height, true));
+}
+
+// left line
+for (let i = 0; i < height; i++) {
+    points.push(getNewPoint(x, y + i, true));
+}   
+
+// right line
+for (let i = 0; i < height; i++) {
+    points.push(getNewPoint(x + width, y + i, true));
+}
+
+
+
+
 
 const countInput = document.querySelector('input#count') as HTMLInputElement;
 
@@ -167,7 +194,9 @@ const step = () => {
     }
     const timeDiff = (now - lastTime) * speedMultiplier;
 
-    for (const point of points) {
+    const nonStaticPoints = points.filter(point => !point.isStatic);
+
+    for (const point of nonStaticPoints) {
         point.acceleration.x = 0;
         point.acceleration.y = 0;
 
@@ -188,7 +217,7 @@ const step = () => {
         power(points);
     }
 
-    for (const point of points) {
+    for (const point of nonStaticPoints) {
         if (isNaN(point.velocity.x)) {
             console.count('NaN velocity X')
             point.velocity.x = point.velocity.x || 0;

@@ -4,6 +4,7 @@ export type TVector = {
 }
 
 export type TPoint = {
+    isStatic?: boolean,
     position: TVector,
     velocity: TVector,
     acceleration: TVector,
