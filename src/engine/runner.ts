@@ -48,9 +48,17 @@ const getNewPoint = (x?: number, y?: number, isStatic?: boolean): TPoint => ({
     isStatic,
 });
 
-for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
-    points.push(getNewPoint());
-}
+const newPointX = window.innerWidth / 2
+const newPointY = window.innerHeight / 2
+const addingInterval = setInterval(() => {
+    if (points.length < INITIAL_POINTS_COUNT) {
+        const x = newPointX + Math.random() * 100 - 50
+        const y = newPointY + Math.random() * 100 - 50
+        points.push(getNewPoint(x, y));
+    } else {
+        clearInterval(addingInterval);
+    }
+}, 1);
 
 // draw a static square in the middle of the screen
 const width = window.innerWidth / 4
@@ -66,19 +74,20 @@ const createRow = (type: 'horizontal' | 'vertical', perpemndicularCoordinate, fr
     }
 }
 
+createRow('vertical', 200, window.innerHeight - 300, window.innerHeight)
+createRow('vertical', 203, window.innerHeight - 300, window.innerHeight)
+
 // bottom line
 createRow('horizontal', y + height, x, x + width)
 createRow('horizontal', y + height + 3, x, x + width)
-
 
 // left line
 createRow('vertical', x, y, y + height)
 createRow('vertical', x + 3, y, y + height)
 
-
 // right line
-createRow('vertical', x + width, y, y + height)
-createRow('vertical', x + width + 3, y, y + height)
+createRow('vertical', x + width, y, y + height * 0.9)
+createRow('vertical', x + width + 3, y, y + height * 0.9)
 
 
 const staticPoints = points.filter(point => point.isStatic).length
