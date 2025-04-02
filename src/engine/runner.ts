@@ -92,6 +92,7 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     }
 
     if (rotating) {
+        const direction = Math.random() > 0.5 ? 1 : -1;
         const originalPoints = JSON.parse(JSON.stringify(rowPoints));
         let startingAngle = 0;
         let lastTime = Date.now();
@@ -102,7 +103,7 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
                 return;
             }
             const timeDiff = timeElapsed / 500;
-            startingAngle += timeDiff
+            startingAngle += timeDiff * direction
             for (let i = 0; i < rowPoints.length; i++) {
                 const point = rowPoints[i];
                 const originalPoint = originalPoints[i];
