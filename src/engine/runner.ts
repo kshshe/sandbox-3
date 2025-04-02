@@ -66,7 +66,7 @@ const addingInterval = setInterval(() => {
 
 // draw a static square in the middle of the screen
 const width = window.innerWidth / 4
-const height = window.innerHeight / 4
+const height = window.innerHeight / 6
 const x = window.innerWidth / 2 - width / 2
 const y = window.innerHeight / 2 - height / 2
 
@@ -88,10 +88,20 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     }
 };
 
+for (let i = 0; i < 3; i++) {
+    const randomFromX = Math.round(Math.random() * window.innerWidth)
+    const randomFromY = Math.round(Math.random() * window.innerHeight)
+    const randomDirectionX = Math.random()
+    const randomDirectionY = Math.random()
+    const randomLength = Math.round(Math.random() * 100) + 100
+    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength)
+}
+
 const maxHeight = Math.min(300, window.innerHeight / 4);
-createRow(200, window.innerHeight - maxHeight, 200, window.innerHeight);
-createRow(203, window.innerHeight - maxHeight, 203, window.innerHeight);
-createRow(206, window.innerHeight - maxHeight, 206, window.innerHeight);
+const left = Math.min(200, window.innerWidth / 4)
+createRow(left, window.innerHeight - maxHeight, left, window.innerHeight);
+createRow(left + 3, window.innerHeight - maxHeight, left + 3, window.innerHeight);
+createRow(left + 6, window.innerHeight - maxHeight, left + 6, window.innerHeight);
 
 // Bottom line
 createRow(x, y + height, x + width, y + height);
@@ -102,8 +112,8 @@ createRow(x, y, x, y + height);
 createRow(x + 3, y, x + 3, y + height);
 
 // Right line
-createRow(x + width, y, x + width, y + height * 0.9);
-createRow(x + width + 3, y, x + width + 3, y + height * 0.9);
+createRow(x + width, y, x + width, y + height - 40);
+createRow(x + width + 3, y, x + width + 3, y + height - 40);
 
 
 const staticPoints = points.filter(point => point.isStatic).length
