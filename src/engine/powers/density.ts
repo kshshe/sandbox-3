@@ -236,7 +236,7 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     }
 
     // @ts-ignore
-    window.accelerations[Math.floor(maxAcceleration / 500) * 500] = (window.accelerations[Math.floor(maxAcceleration / 500) * 500] || 0) + 1;
+    window.accelerations[Math.round(maxAcceleration / 500) * 500] = (window.accelerations[Math.round(maxAcceleration / 500) * 500] || 0) + 1;
 }
 
 densityProcessor.isParallel = true;

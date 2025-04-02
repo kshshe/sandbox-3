@@ -11,7 +11,7 @@ export const setMousePosition = (position: TVector | null, direction: typeof mou
 }
 
 export const MAX_MOUSE_DISTANCE = 150;
-const BASE_FORCE = 20;
+const BASE_FORCE = 40;
 
 export const mouseProcessor: TPowerProcessor = (point) => {
     if (!mousePosition) {
@@ -34,6 +34,10 @@ export const mouseProcessor: TPowerProcessor = (point) => {
         x: direction.x / length,
         y: direction.y / length,
     };
+
+    if (isNaN(normalizedDirection.x) || isNaN(normalizedDirection.y)) {
+        return
+    }
 
     point.acceleration.x += normalizedDirection.x * force;
     point.acceleration.y += normalizedDirection.y * force;
