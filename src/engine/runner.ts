@@ -59,26 +59,28 @@ const x = window.innerWidth / 2 - width / 2
 const y = window.innerHeight / 2 - height / 2
 
 // bottom line
-for (let i = 0; i < width; i++) {
+for (let i = 0; i < width; i += 3) {
+    points.push(getNewPoint(x + i, y + height - 3, true));
     points.push(getNewPoint(x + i, y + height, true));
-    points.push(getNewPoint(x + i, y + height + 4, true));
+    points.push(getNewPoint(x + i, y + height + 3, true));
 }
 
 // left line
-for (let i = 0; i < height; i++) {
+for (let i = 0; i < height; i += 3) {
     points.push(getNewPoint(x, y + i, true));
-    points.push(getNewPoint(x - 4, y + i, true));
+    points.push(getNewPoint(x - 3, y + i, true));
+    points.push(getNewPoint(x + 3, y + i, true));
 }   
 
 // right line
-for (let i = 0; i < height; i++) {
+for (let i = 0; i < height; i += 3) {
     points.push(getNewPoint(x + width, y + i, true));
-    points.push(getNewPoint(x + width + 4, y + i, true));
+    points.push(getNewPoint(x + width + 3, y + i, true));
+    points.push(getNewPoint(x + width - 3, y + i, true));
 }
 
-
-
-
+const staticPoints = points.filter(point => point.isStatic).length
+console.log(`Static points: ${staticPoints}`)
 
 const countInput = document.querySelector('input#count') as HTMLInputElement;
 
