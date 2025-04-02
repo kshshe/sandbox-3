@@ -11,6 +11,8 @@ const GPUClass = (window.GPU?.GPU || window.GPU);
 
 console.log({ GPUClass })
 
+const MAX_ACCELERATION = 1200;
+
 // @ts-ignore
 const gpu = new GPUClass() as GPU;
 const getDencityAcceleration = gpu.createKernel(function(config: number[], chunksAndChunksStartingIndicesAndLengths: number[], points: number[]) {
@@ -217,12 +219,29 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
 
     const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number][];
 
+    // @ts-ignore
+    if (!window.accelerations) {
+        // @ts-ignore
+        window.accelerations = {};
+    }
+
+    let maxAcceleration = -Infinity;
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number];
         const point = points[index];
-        point.acceleration.x += pointAcceleration[0];
-        point.acceleration.y += pointAcceleration[1];
+        const length = Math.sqrt(pointAcceleration[0] * pointAcceleration[0] + pointAcceleration[1] * pointAcceleration[1]);
+        const factor = length > MAX_ACCELERATION ? MAX_ACCELERATION / length : 1;
+        point.acceleration.x += pointAcceleration[0] * factor;
+        point.acceleration.y += pointAcceleration[1] * factor;
+
+        const accelerationMagnitude = Math.sqrt(pointAcceleration[0] * pointAcceleration[0] + pointAcceleration[1] * pointAcceleration[1]);
+        if (accelerationMagnitude > maxAcceleration) {
+            maxAcceleration = accelerationMagnitude;
+        }
     }
+
+    // @ts-ignore
+    window.accelerations[Math.floor(maxAcceleration / 500) * 500] = (window.accelerations[Math.floor(maxAcceleration / 500) * 500] || 0) + 1;
 }
 
 densityProcessor.isParallel = true;

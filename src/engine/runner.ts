@@ -58,6 +58,7 @@ const countInput = document.querySelector('input#count') as HTMLInputElement;
 
 if (countInput) {
     countInput.value = INITIAL_POINTS_COUNT.toString();
+    countInput.setAttribute('max', MAX_POINTS_COUNT.toString());
 }
 
 initControl('input#count', (e) => {
