@@ -9,6 +9,7 @@ const fps = new FPS({
     meter: false,
     text: ' processings per second',
 })
+let paused: boolean = false;
 
 export let points: TPoint[] = [];
 
@@ -51,6 +52,9 @@ const getNewPoint = (x?: number, y?: number, isStatic?: boolean): TPoint => ({
 const newPointX = window.innerWidth / 2
 const newPointY = window.innerHeight / 2
 const addingInterval = setInterval(() => {
+    if (paused) {
+        return;
+    }
     if (points.length < INITIAL_POINTS_COUNT) {
         const x = newPointX + Math.random() * 100 - 50
         const y = newPointY + Math.random() * 100 - 50
@@ -142,7 +146,6 @@ const processBorder = (point: TPoint, axis: "x" | "y", minOrMax: "min" | "max", 
 }
 
 let lastTime: number | null = null;
-let paused: boolean = false;
 
 if (location.hostname !== 'localhost') {
     window.addEventListener('blur', () => {
