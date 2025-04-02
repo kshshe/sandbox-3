@@ -58,26 +58,28 @@ const height = window.innerHeight / 4
 const x = window.innerWidth / 2 - width / 2
 const y = window.innerHeight / 2 - height / 2
 
-// bottom line
-for (let i = 0; i < width; i += 3) {
-    points.push(getNewPoint(x + i, y + height - 3, true));
-    points.push(getNewPoint(x + i, y + height, true));
-    points.push(getNewPoint(x + i, y + height + 3, true));
+const createRow = (type: 'horizontal' | 'vertical', perpemndicularCoordinate, from, to) => {
+    for (let i = from; i < to; i += 3) {
+        const x = type === 'horizontal' ? i : perpemndicularCoordinate
+        const y = type === 'vertical' ? i : perpemndicularCoordinate
+        points.push(getNewPoint(x, y, true))
+    }
 }
+
+// bottom line
+createRow('horizontal', y + height, x, x + width)
+createRow('horizontal', y + height + 3, x, x + width)
+
 
 // left line
-for (let i = 0; i < height; i += 3) {
-    points.push(getNewPoint(x, y + i, true));
-    points.push(getNewPoint(x - 3, y + i, true));
-    points.push(getNewPoint(x + 3, y + i, true));
-}   
+createRow('vertical', x, y, y + height)
+createRow('vertical', x + 3, y, y + height)
+
 
 // right line
-for (let i = 0; i < height; i += 3) {
-    points.push(getNewPoint(x + width, y + i, true));
-    points.push(getNewPoint(x + width + 3, y + i, true));
-    points.push(getNewPoint(x + width - 3, y + i, true));
-}
+createRow('vertical', x + width, y, y + height)
+createRow('vertical', x + width + 3, y, y + height)
+
 
 const staticPoints = points.filter(point => point.isStatic).length
 console.log(`Static points: ${staticPoints}`)
