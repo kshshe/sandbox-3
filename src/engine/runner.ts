@@ -321,11 +321,20 @@ export const run = async () => {
 
 const statusBlock = document.querySelector('.status') as HTMLDivElement;
 
+let pointsCountChangedOn = Date.now();
+let lastPointsCount = points.length;
 const updateStatus = () => {
+    const isRecentlyChanged = Date.now() - pointsCountChangedOn < 1000;
+
+    if (points.length !== lastPointsCount) {
+        pointsCountChangedOn = Date.now();
+        lastPointsCount = points.length;
+    }
+
     const text = [
         // `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
         // `Max speed: ${points.reduce((a, b) => Math.max(a, getVectorLength(b.velocity)), 0).toFixed(2)}`,
-        `Points: ${points.length}`,
+        `Points: <span style="font-weight: ${isRecentlyChanged ? 'bold' : 'normal'}">${points.length}${isRecentlyChanged ? ' ➕' : ''}</span>`,
         // `Unique positions: ${(100 * getUniquePositionsCount() / points.length).toFixed(2)}%`,
         // process.env.VERCEL_GIT_COMMIT_MESSAGE && `Commit: <span title="${process.env.VERCEL_GIT_COMMIT_MESSAGE}">${stringToMaxLen(process.env.VERCEL_GIT_COMMIT_MESSAGE, 15)}</span>`,
         `Step: ${lastStepDuration > 16 ? '🐌' : (lastStepDuration > 10 ? '⚠️ ' : '')}${lastStepDuration.toFixed(2)}ms`,
@@ -335,4 +344,4 @@ const updateStatus = () => {
     statusBlock.innerHTML = text;
 }
 
-setInterval(updateStatus, 1000);
+setInterval(updateStatus, 300);
