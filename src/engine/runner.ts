@@ -88,8 +88,6 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     }
 };
 
-// Refactor the existing calls to use the new function signature
-// Vertical row at x=200 from top to bottom
 const maxHeight = Math.min(300, window.innerHeight / 4);
 createRow(200, window.innerHeight - maxHeight, 200, window.innerHeight);
 createRow(203, window.innerHeight - maxHeight, 203, window.innerHeight);
