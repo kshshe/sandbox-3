@@ -280,10 +280,20 @@ const step = () => {
     lastStepDuration = endTime - startTime;
 }
 
-const waitFastest = () => Promise.race([
-    new Promise((resolve) => setTimeout(resolve)),
-    new Promise((resolve) => requestAnimationFrame(resolve)),
-]);
+const waitFastest = async () => {
+    let t: NodeJS.Timeout | null = null
+    let f: number | null = null
+    await Promise.race([
+        new Promise((resolve) => t = setTimeout(resolve)),
+        new Promise((resolve) => f = requestAnimationFrame(resolve)),
+    ])
+    if (t) {
+        clearTimeout(t)
+    }
+    if (f) {
+        cancelAnimationFrame(f)
+    }
+};
 
 export const run = async () => {
     while (true) {
