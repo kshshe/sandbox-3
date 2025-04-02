@@ -93,6 +93,9 @@ const CENTER_OF_THE_SCREEN: TVector = {
 }
 
 export const gravityProcessor: TPowerProcessor = (point) => {
+    if (point.isStatic) {
+        return
+    }
     if (isCentered) {
         const directionToTheCenter: TVector = {
             x: CENTER_OF_THE_SCREEN.x - point.position.x,

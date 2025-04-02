@@ -197,7 +197,16 @@ const step = () => {
     const timeElapsed = Math.min(MAX_FRAME_TIME, now - lastTime);
     const timeDiff = timeElapsed * speedMultiplier;
 
-    const nonStaticPoints = points.filter(point => !point.isStatic);
+    const nonStaticPoints: TPoint[] = [];
+    const staticPoints: TPoint[] = [];
+
+    for (const point of points) {
+        if (point.isStatic) {
+            staticPoints.push(point);
+        } else {
+            nonStaticPoints.push(point);
+        }
+    }
 
     for (const point of nonStaticPoints) {
         point.acceleration.x = 0;
@@ -218,6 +227,13 @@ const step = () => {
             continue;
         }
         power(points);
+    }
+
+    for (const point of staticPoints) {
+        point.velocity.x = 0;
+        point.velocity.y = 0;
+        point.acceleration.x = 0;
+        point.acceleration.y = 0;
     }
 
     for (const point of nonStaticPoints) {

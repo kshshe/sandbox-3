@@ -14,6 +14,9 @@ export const MAX_MOUSE_DISTANCE = 150;
 const BASE_FORCE = 40;
 
 export const mouseProcessor: TPowerProcessor = (point) => {
+    if (point.isStatic) {
+        return;
+    }
     if (!mousePosition) {
         return;
     }
