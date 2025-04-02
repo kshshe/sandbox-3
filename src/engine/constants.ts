@@ -11,3 +11,5 @@ const isSmallScreen = window.innerWidth < 768;
 
 export const INITIAL_POINTS_COUNT = isSmallScreen ? 600 : 2000;
 export const MAX_POINTS_COUNT = isSmallScreen ? 1500 : 4000;
+
+export const MAX_ACCELERATION = 900;

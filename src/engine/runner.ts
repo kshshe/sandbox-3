@@ -1,4 +1,4 @@
-import { BORDERS, INITIAL_POINTS_COUNT, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
+import { BORDERS, INITIAL_POINTS_COUNT, MAX_ACCELERATION, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
@@ -197,6 +197,11 @@ const step = () => {
         if (isNaN(point.velocity.y)) {
             console.count('NaN velocity Y')
             point.velocity.y = point.velocity.y || 0;
+        }
+
+        const accelerationLength = getVectorLength(point.acceleration);
+        if (accelerationLength > MAX_ACCELERATION) {
+            point.acceleration = multiplyVector(point.acceleration, MAX_ACCELERATION / accelerationLength);
         }
 
         point.velocity = multiplyVector(point.velocity, Math.pow((slowdownPower / 1000), timeDiff / 1000));
