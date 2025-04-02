@@ -117,7 +117,7 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
                 point.position.x = newX
                 point.position.y = newY
             }
-        }, 20);
+        }, 2);
     }
 };
 
