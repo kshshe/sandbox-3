@@ -245,8 +245,8 @@ export const initRender = () => {
             overlayCtx.fillStyle = `rgb(0, 0, 0)`;
             overlayCtx.fillRect(point.position.x, point.position.y, 10, 10);
             if (customSizes) {
-                ctx.fillStyle = `rgb(0, 0, 0)`;
-                ctx.fillRect(point.position.x, point.position.y, 10, 10);
+                ctx.fillStyle = `rgb(255, 255, 255)`;
+                ctx.fillRect(point.position.x, point.position.y, 1, 1);
             }
         });
 
