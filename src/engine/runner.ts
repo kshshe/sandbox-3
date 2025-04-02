@@ -1,4 +1,4 @@
-import { BORDERS, INITIAL_POINTS_COUNT, MAX_ACCELERATION, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
+import { BORDERS, INITIAL_POINTS_COUNT, MAX_ACCELERATION, MAX_FRAME_TIME, MAX_POINTS_COUNT, MAX_SPEED, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
@@ -130,6 +130,7 @@ let paused: boolean = false;
 if (location.hostname !== 'localhost') {
     window.addEventListener('blur', () => {
         paused = true;
+        lastTime = Date.now();
     });
 
     window.addEventListener('focus', () => {
@@ -176,8 +177,6 @@ initControl('input#speed', (e) => {
 
 let lastStepDuration = 0;
 
-const MAX_SPEED = 300;
-
 let slowdownPower = 999;
 
 initControl('input#slowdown-power', (e) => {
@@ -195,7 +194,8 @@ const step = () => {
     if (!lastTime) {
         lastTime = now - 10;
     }
-    const timeDiff = (now - lastTime) * speedMultiplier;
+    const timeElapsed = Math.min(MAX_FRAME_TIME, now - lastTime);
+    const timeDiff = timeElapsed * speedMultiplier;
 
     const nonStaticPoints = points.filter(point => !point.isStatic);
 
