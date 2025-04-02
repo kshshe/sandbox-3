@@ -97,10 +97,10 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
         let lastTime = Date.now();
         setInterval(() => {
             const timeElapsed = Date.now() - lastTime;
+            lastTime = Date.now();
             if (paused) {
                 return;
             }
-            lastTime = Date.now();
             const timeDiff = timeElapsed / 500;
             startingAngle += timeDiff
             for (let i = 0; i < rowPoints.length; i++) {
