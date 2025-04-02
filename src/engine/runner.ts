@@ -59,16 +59,19 @@ const y = window.innerHeight / 2 - height / 2
 // bottom line
 for (let i = 0; i < width; i++) {
     points.push(getNewPoint(x + i, y + height, true));
+    points.push(getNewPoint(x + i, y + height + 4, true));
 }
 
 // left line
 for (let i = 0; i < height; i++) {
     points.push(getNewPoint(x, y + i, true));
+    points.push(getNewPoint(x - 4, y + i, true));
 }   
 
 // right line
 for (let i = 0; i < height; i++) {
     points.push(getNewPoint(x + width, y + i, true));
+    points.push(getNewPoint(x + width + 4, y + i, true));
 }
 
 
