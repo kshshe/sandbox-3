@@ -5,7 +5,9 @@ import { powers } from "./powers";
 import { getVectorLength, multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
 const fps = new FPS({
-    FPS: 200,
+    FPS: 1000,
+    meter: false,
+    text: ' processings per second',
 })
 
 export const points: TPoint[] = [];
@@ -281,7 +283,13 @@ const step = () => {
 export const run = async () => {
     while (true) {
         step();
-        await new Promise((resolve) => setTimeout(resolve, paused ? 100 : 0));
+        if (paused) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        await Promise.race([
+            new Promise((resolve) => setTimeout(resolve)),
+            new Promise((resolve) => requestAnimationFrame(resolve)),
+        ]);
     }
 }
 
