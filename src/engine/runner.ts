@@ -140,6 +140,10 @@ createRow(left + 6, window.innerHeight - maxHeight, left + 6, window.innerHeight
 createRow(x, y + height, x + width, y + height);
 createRow(x, y + height + 3, x + width, y + height + 3);
 
+// Top line
+createRow(x, y, x + width, y);
+createRow(x, y + 3, x + width, y + 3);
+
 // Left line
 createRow(x, y, x, y + height);
 createRow(x + 3, y, x + 3, y + height);
