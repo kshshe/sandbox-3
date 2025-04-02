@@ -239,21 +239,6 @@ export const run = async () => {
 
 const statusBlock = document.querySelector('.status') as HTMLDivElement;
 
-const getUniquePositionsCount = () => {
-    const positions = new Set<string>();
-    for (const point of points) {
-        positions.add(`${point.position.x.toFixed(1)}:${point.position.y.toFixed(1)}`);
-    }
-    return positions.size;
-}
-
-const stringToMaxLen = (str: string, len: number) => {
-    if (str.length > len) {
-        return str.slice(0, len - 3) + '...';
-    }
-    return str;
-}
-
 const updateStatus = () => {
     const text = [
         // `AVG speed: ${window.getAverageSpeed().toFixed(2)}`,
