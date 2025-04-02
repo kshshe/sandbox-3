@@ -209,6 +209,11 @@ export const initRender = () => {
             const y = point.position.y - size / 2;
             ctx.fillStyle = color;
             ctx.fillRect(x, y, size, size);
+
+            if (customSizes) {
+                overlayCtx.fillStyle = `rgb(0, 0, 0)`;
+                overlayCtx.fillRect(point.position.x - 1, point.position.y - 1, 2, 2);
+            }
         });
 
         if (customSizes) {
