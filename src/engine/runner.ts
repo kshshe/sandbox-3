@@ -138,16 +138,16 @@ createRow(left + 3, window.innerHeight - maxHeight, left + 3, window.innerHeight
 createRow(left + 6, window.innerHeight - maxHeight, left + 6, window.innerHeight);
 
 // Bottom line
-createRow(x, y + height, x + width, y + height);
-createRow(x, y + height + 3, x + width, y + height + 3);
+createRow(x, y + height - 30, x + width, y + height);
+createRow(x, y + height + 3 - 30, x + width, y + height + 3);
 
 // Top line
 createRow(x, y, x + width, y);
 createRow(x, y + 3, x + width, y + 3);
 
 // Left line
-createRow(x, y, x, y + height);
-createRow(x + 3, y, x + 3, y + height);
+createRow(x, y, x, y + height - 30);
+createRow(x + 3, y, x + 3, y + height - 30);
 
 // Right line
 createRow(x + width, y, x + width, y + height - 40);
