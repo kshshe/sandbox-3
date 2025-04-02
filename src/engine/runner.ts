@@ -280,16 +280,18 @@ const step = () => {
     lastStepDuration = endTime - startTime;
 }
 
+const waitFastest = () => Promise.race([
+    new Promise((resolve) => setTimeout(resolve)),
+    new Promise((resolve) => requestAnimationFrame(resolve)),
+]);
+
 export const run = async () => {
     while (true) {
         step();
         if (paused) {
             await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        await Promise.race([
-            new Promise((resolve) => setTimeout(resolve)),
-            new Promise((resolve) => requestAnimationFrame(resolve)),
-        ]);
+        await waitFastest();
     }
 }
 
