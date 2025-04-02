@@ -71,10 +71,12 @@ if (gravityInput) {
                     
                     window.addEventListener("devicemotion", handleMotion, true);
 
-                    const newOption = document.createElement('option');
-                    newOption.value = 'motion';
-                    newOption.textContent = 'Accelerometer';
-                    gravityInput.appendChild(newOption);
+                    if (!gravityInput.querySelector('option[value="motion"]')) {  
+                        const newOption = document.createElement('option');
+                        newOption.value = 'motion';
+                        newOption.textContent = 'Accelerometer';
+                        gravityInput.appendChild(newOption);
+                    }
                 } catch (e) {
                     console.log(e.message || e.toString())
                 }
