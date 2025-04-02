@@ -1,4 +1,4 @@
-import { BORDERS, INITIAL_COLUMNS, INITIAL_POINTS_COUNT, INITIAL_ROWS, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
+import { BORDERS, INITIAL_POINTS_COUNT, MAX_POINTS_COUNT, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
 import { TPoint } from "./data.t";
 import { powers } from "./powers";
@@ -45,13 +45,7 @@ const getNewPoint = (x?: number, y?: number): TPoint => ({
 });
 
 for (let i = 0; i < INITIAL_POINTS_COUNT; i++) {
-    const col = i % INITIAL_COLUMNS;
-    const row = Math.floor(i / INITIAL_COLUMNS);
-
-    const x = BORDERS.minX + (BORDERS.maxX - BORDERS.minX) * col / INITIAL_COLUMNS;
-    const y = BORDERS.minY + (BORDERS.maxY - BORDERS.minY) * row / INITIAL_ROWS;
-
-    points.push(getNewPoint(x, y));
+    points.push(getNewPoint());
 }
 
 const countInput = document.querySelector('input#count') as HTMLInputElement;
