@@ -10,7 +10,7 @@ const fps = new FPS({
     text: ' processings per second',
 })
 
-export const points: TPoint[] = [];
+export let points: TPoint[] = [];
 
 declare global {
     interface Window {
@@ -96,7 +96,8 @@ initControl('input#count', (e) => {
             points.push(getNewPoint());
         }
     } else {
-        points.splice(newCount, points.length - newCount);
+        const nonStaticPoints = points.filter(point => !point.isStatic).slice(0, newCount);
+        points = [...nonStaticPoints, ...points.filter(point => point.isStatic)];
     }
 });
 

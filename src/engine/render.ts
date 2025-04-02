@@ -196,6 +196,7 @@ export const initRender = () => {
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
         const size = customSizes ? 30 : 4;
         const color = `rgb(0, 0, 255)`;
@@ -241,9 +242,13 @@ export const initRender = () => {
 
         const staticPoints = points.filter(point => point.isStatic);
 
+        const staticSize = customSizes ? 10 : 1;
+        const width = staticSize / 2;
         staticPoints.forEach(point => {
             overlayCtx.fillStyle = `rgb(0, 0, 0)`;
-            overlayCtx.fillRect(point.position.x, point.position.y, 10, 10);
+            const x = point.position.x - width;
+            const y = point.position.y - width;
+            overlayCtx.fillRect(x, y, staticSize, staticSize);
             if (customSizes) {
                 ctx.fillStyle = `rgb(255, 255, 255)`;
                 ctx.fillRect(point.position.x, point.position.y, 1, 1);
