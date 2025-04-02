@@ -32,7 +32,7 @@ window.getAverageSpeed = () => {
 
 const REFLECTION = 0.45;
 
-const getNewPoint = (x?: number, y?: number, isStatic?: boolean): TPoint => ({
+const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = false): TPoint => ({
     position: {
         x: x || (Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX),
         y: y || (Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY),
@@ -70,7 +70,7 @@ const height = window.innerHeight / 6
 const x = window.innerWidth / 2 - width / 2
 const y = window.innerHeight / 2 - height / 2
 
-const createRow = (fromX: number, fromY: number, toX: number, toY: number, spacing: number = 3) => {
+const createRow = (fromX: number, fromY: number, toX: number, toY: number, spacing: number = 3, rotating = false) => {
     // Calculate the number of points to create
     const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
     const count = Math.floor(distance / spacing);
@@ -80,11 +80,36 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     // Calculate increment for each step
     const xIncrement = (toX - fromX) / count;
     const yIncrement = (toY - fromY) / count;
+
+    const rowPoints: TPoint[] = [];
     
     for (let i = 0; i <= count; i++) {
         const x = fromX + xIncrement * i;
         const y = fromY + yIncrement * i;
-        points.push(getNewPoint(x, y, true));
+        const newPoint = getNewPoint(x, y, true, rotating);
+        rowPoints.push(newPoint);
+        points.push(newPoint);
+    }
+
+    if (rotating) {
+        const originalPoints = JSON.parse(JSON.stringify(rowPoints));
+        const startedAt = Date.now();
+        setInterval(() => {
+            const timeElapsed = Date.now() - startedAt;
+            const timeDiff = timeElapsed / 500;
+            for (let i = 0; i < rowPoints.length; i++) {
+                const point = rowPoints[i];
+                const originalPoint = originalPoints[i];
+                const relativeX = originalPoint.position.x - fromX
+                const relativeY = originalPoint.position.y - fromY
+                const angle = Math.atan2(relativeY, relativeX) + timeDiff
+                const distance = Math.sqrt(relativeX * relativeX + relativeY * relativeY)
+                const newX = fromX + Math.cos(angle) * distance
+                const newY = fromY + Math.sin(angle) * distance
+                point.position.x = newX
+                point.position.y = newY
+            }
+        }, 20);
     }
 };
 
@@ -94,7 +119,7 @@ for (let i = 0; i < 3; i++) {
     const randomDirectionX = Math.random()
     const randomDirectionY = Math.random()
     const randomLength = Math.round(Math.random() * 100) + 100
-    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength)
+    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength, 3, i === 0)
 }
 
 const maxHeight = Math.min(300, window.innerHeight / 4);
