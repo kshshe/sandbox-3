@@ -217,26 +217,12 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
 
     const kernelResult = getDencityAcceleration(kernelInput[0], kernelInput[1], kernelInput[2]) as [number, number][];
 
-    // @ts-ignore
-    if (!window.accelerations) {
-        // @ts-ignore
-        window.accelerations = {};
-    }
-
-    let maxAcceleration = -Infinity;
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number];
         const point = points[index];
         point.acceleration.x += pointAcceleration[0];
         point.acceleration.y += pointAcceleration[1];
-
-        if (length > maxAcceleration) {
-            maxAcceleration = length;
-        }
     }
-
-    // @ts-ignore
-    window.accelerations[Math.round(maxAcceleration / 500) * 500] = (window.accelerations[Math.round(maxAcceleration / 500) * 500] || 0) + 1;
 }
 
 densityProcessor.isParallel = true;
