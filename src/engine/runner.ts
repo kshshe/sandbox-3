@@ -70,29 +70,42 @@ const height = window.innerHeight / 4
 const x = window.innerWidth / 2 - width / 2
 const y = window.innerHeight / 2 - height / 2
 
-const createRow = (type: 'horizontal' | 'vertical', perpemndicularCoordinate, from, to) => {
-    for (let i = from; i < to; i += 3) {
-        const x = type === 'horizontal' ? i : perpemndicularCoordinate
-        const y = type === 'vertical' ? i : perpemndicularCoordinate
-        points.push(getNewPoint(x, y, true))
+const createRow = (fromX: number, fromY: number, toX: number, toY: number, spacing: number = 3) => {
+    // Calculate the number of points to create
+    const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+    const count = Math.floor(distance / spacing);
+    
+    if (count <= 0) return;
+    
+    // Calculate increment for each step
+    const xIncrement = (toX - fromX) / count;
+    const yIncrement = (toY - fromY) / count;
+    
+    for (let i = 0; i <= count; i++) {
+        const x = fromX + xIncrement * i;
+        const y = fromY + yIncrement * i;
+        points.push(getNewPoint(x, y, true));
     }
-}
+};
 
-createRow('vertical', 200, window.innerHeight - 300, window.innerHeight)
-createRow('vertical', 203, window.innerHeight - 300, window.innerHeight)
-createRow('vertical', 206, window.innerHeight - 300, window.innerHeight)
+// Refactor the existing calls to use the new function signature
+// Vertical row at x=200 from top to bottom
+const maxHeight = Math.min(300, window.innerHeight / 4);
+createRow(200, window.innerHeight - maxHeight, 200, window.innerHeight);
+createRow(203, window.innerHeight - maxHeight, 203, window.innerHeight);
+createRow(206, window.innerHeight - maxHeight, 206, window.innerHeight);
 
-// bottom line
-createRow('horizontal', y + height, x, x + width)
-createRow('horizontal', y + height + 3, x, x + width)
+// Bottom line
+createRow(x, y + height, x + width, y + height);
+createRow(x, y + height + 3, x + width, y + height + 3);
 
-// left line
-createRow('vertical', x, y, y + height)
-createRow('vertical', x + 3, y, y + height)
+// Left line
+createRow(x, y, x, y + height);
+createRow(x + 3, y, x + 3, y + height);
 
-// right line
-createRow('vertical', x + width, y, y + height * 0.9)
-createRow('vertical', x + width + 3, y, y + height * 0.9)
+// Right line
+createRow(x + width, y, x + width, y + height * 0.9);
+createRow(x + width + 3, y, x + width + 3, y + height * 0.9);
 
 
 const staticPoints = points.filter(point => point.isStatic).length
