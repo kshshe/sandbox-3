@@ -45,6 +45,11 @@ canvas {
     border-radius: 5px;
     color: #fff;
 
+    a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
     label {
         display: block;
         margin-bottom: 5px;
