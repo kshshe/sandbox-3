@@ -10,6 +10,7 @@ const fps = new FPS({
     text: ' processings per second',
 })
 let paused: boolean = false;
+let speedMultiplier = 7;
 
 export let points: TPoint[] = [];
 
@@ -102,8 +103,8 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
             if (paused) {
                 return;
             }
-            const timeDiff = timeElapsed / 500;
-            startingAngle += timeDiff * direction
+            const timeDiff = timeElapsed / 4000;
+            startingAngle += timeDiff * direction * speedMultiplier
             for (let i = 0; i < rowPoints.length; i++) {
                 const point = rowPoints[i];
                 const originalPoint = originalPoints[i];
@@ -211,8 +212,6 @@ if (location.hostname !== 'localhost') {
         lastTime = Date.now();
     });
 }
-
-let speedMultiplier = 7;
 
 document.body.addEventListener('keydown', (e) => {
     const isSpace = e.code === 'Space';
