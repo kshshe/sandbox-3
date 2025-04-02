@@ -76,7 +76,7 @@ const getDencityAcceleration = gpu.createKernel(function(config: number[], chunk
                                     const normalizedDirectionX = directionX / distance;
                                     const normalizedDirectionY = directionY / distance;
     
-                                    const forceValue = -Math.pow(1 - Math.abs(distance / maxDistance), 3);
+                                    const forceValue = Math.max(-Math.pow(Math.abs(maxDistance / distance), 4), -10);
                                     const antiForceValue = Math.pow(Math.abs(distance / maxDistance), 2)
     
                                     const xAccelerationChange = normalizedDirectionX * forceValue * baseForce;
@@ -85,8 +85,8 @@ const getDencityAcceleration = gpu.createKernel(function(config: number[], chunk
                                     const xAntiAccelerationChange = normalizedDirectionX * antiForceValue * baseAntiDensityForce;
                                     const yAntiAccelerationChange = normalizedDirectionY * antiForceValue * baseAntiDensityForce;
     
-                                    const xViscosityChange = (otherPointVelocityX - pointVelocityX) * -viscosity * forceValue;
-                                    const yViscosityChange = (otherPointVelocityY - pointVelocityY) * -viscosity * forceValue;
+                                    const xViscosityChange = (otherPointVelocityX - pointVelocityX) * viscosity;
+                                    const yViscosityChange = (otherPointVelocityY - pointVelocityY) * viscosity;
     
                                     totalAccelerationX += xAccelerationChange + xAntiAccelerationChange + xViscosityChange;
                                     totalAccelerationY += yAccelerationChange + yAntiAccelerationChange + yViscosityChange;
@@ -119,10 +119,13 @@ window.getDencityAcceleration = getDencityAcceleration;
 
 const constants = {
     pointsCount: INITIAL_POINTS_COUNT,
-    maxDistance: 40,
+    maxDistance: 10,
+    // How much nearby points repel each other
     baseForce: 40,
-    baseAntiDensityForce: 1,
-    viscosity: 0.7,
+    // How much nearby points attract each other
+    baseAntiDensityForce: 30, // 0 to 100
+    // How much nearby points share speed
+    viscosity: 0.2, // 0 to 0.5
 }
 
 const inputModifiers = {
