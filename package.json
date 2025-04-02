@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@types/node": "^20.10.4",
+    "sakura.css": "^1.5.0",
     "yy-fps": "^2.0.1"
   }
 }
