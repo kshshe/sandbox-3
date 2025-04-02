@@ -93,16 +93,22 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
 
     if (rotating) {
         const originalPoints = JSON.parse(JSON.stringify(rowPoints));
-        const startedAt = Date.now();
+        let startingAngle = 0;
+        let lastTime = Date.now();
         setInterval(() => {
-            const timeElapsed = Date.now() - startedAt;
+            const timeElapsed = Date.now() - lastTime;
+            if (paused) {
+                return;
+            }
+            lastTime = Date.now();
             const timeDiff = timeElapsed / 500;
+            startingAngle += timeDiff
             for (let i = 0; i < rowPoints.length; i++) {
                 const point = rowPoints[i];
                 const originalPoint = originalPoints[i];
                 const relativeX = originalPoint.position.x - fromX
                 const relativeY = originalPoint.position.y - fromY
-                const angle = Math.atan2(relativeY, relativeX) + timeDiff
+                const angle = Math.atan2(relativeY, relativeX) + startingAngle
                 const distance = Math.sqrt(relativeX * relativeX + relativeY * relativeY)
                 const newX = fromX + Math.cos(angle) * distance
                 const newY = fromY + Math.sin(angle) * distance
