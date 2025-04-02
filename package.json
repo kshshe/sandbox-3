@@ -19,7 +19,9 @@
   "homepage": "https://github.com/kshshe/sandbox-3#readme",
   "devDependencies": {
     "@parcel/optimizer-terser": "^2.10.3",
+    "@parcel/packager-raw-url": "^2.10.3",
     "@parcel/transformer-sass": "^2.10.3",
+    "@parcel/transformer-webmanifest": "^2.10.3",
     "parcel": "^2.10.3"
   },
   "dependencies": {
