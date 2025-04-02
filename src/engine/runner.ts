@@ -121,12 +121,13 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     }
 };
 
-for (let i = 0; i < 3; i++) {
+const RANDOM_ROWS_COUNT = 1;
+for (let i = 0; i < RANDOM_ROWS_COUNT; i++) {
     const randomFromX = Math.round(Math.random() * window.innerWidth)
     const randomFromY = Math.round(Math.random() * window.innerHeight)
     const randomDirectionX = Math.random()
     const randomDirectionY = Math.random()
-    const randomLength = Math.round(Math.random() * 100) + 100
+    const randomLength = Math.round(Math.random() * 100) + 200
     createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength, 3, i === 0)
 }
 
