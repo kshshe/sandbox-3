@@ -76,6 +76,7 @@ const createRow = (type: 'horizontal' | 'vertical', perpemndicularCoordinate, fr
 
 createRow('vertical', 200, window.innerHeight - 300, window.innerHeight)
 createRow('vertical', 203, window.innerHeight - 300, window.innerHeight)
+createRow('vertical', 206, window.innerHeight - 300, window.innerHeight)
 
 // bottom line
 createRow('horizontal', y + height, x, x + width)
