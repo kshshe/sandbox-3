@@ -129,14 +129,26 @@ const constants = {
 }
 
 const inputModifiers = {
-    viscosity: 0.1,
+    viscosity: 0.01,
 }
 
-const initRangeControl = (selector: string, constantKey: string) => {
+const initRangeControl = (selector: string, constantKey: keyof typeof constants, {
+    from = 0,
+    to = 100,
+    step = 1,
+}: {
+    from?: number;
+    to?: number;
+    step?: number;
+}) => {
     const input = document.querySelector(selector) as HTMLInputElement;
     if (!input) {
         return
     }
+
+    input.min = `${from}`;
+    input.max = `${to}`;
+    input.step = `${step}`;
 
     initControl(selector, (e) => {
         const input = e.target as HTMLInputElement;
@@ -148,10 +160,17 @@ const initRangeControl = (selector: string, constantKey: string) => {
     input.value = `${constants[constantKey]}`;
 }
 
-initRangeControl('input#dencity-power', 'baseForce');
-initRangeControl('input#anti-dencity-power', 'baseAntiDensityForce');
-initRangeControl('input#viscosity-power', 'viscosity');
-initRangeControl('input#influence-radius', 'maxDistance');
+initRangeControl('input#anti-dencity-power', 'baseAntiDensityForce', {
+    from: 0,
+    to: 100,
+    step: 1,
+});
+
+initRangeControl('input#viscosity-power', 'viscosity', {
+    from: 0,
+    to: 500,
+    step: 1,
+});
 
 export const densityProcessor: TPowerProcessorParallel = (points) => {
     const kernelOutputSize = getDencityAcceleration.output[0];
