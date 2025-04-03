@@ -106,7 +106,8 @@
 
     <hr>
 
-    <label data-tippy-content="How many frames per second should be rendered? Only affects the rendering speed, not the simulation speed.">
+    <label
+      data-tippy-content="How many frames per second should be rendered? Only affects the rendering speed, not the simulation speed.">
       <div>
         Rendering FPS
       </div>
@@ -122,7 +123,8 @@
 
     <hr>
 
-    <label id="gravityPowerLabel" data-tippy-content="How strong the gravity should be? Value of 98 here equals to Earth's gravity.">
+    <label id="gravityPowerLabel"
+      data-tippy-content="How strong the gravity should be? Value of 98 here equals to Earth's gravity.">
       <div>
         Gravity power
       </div>
@@ -136,16 +138,20 @@
       <input type="range" id="count" name="count" min="1" max="10000" value="1000" />
     </label>
 
+    <button id="delete-obstacles">Delete obstacles</button>
+
     <hr>
 
-    <label data-tippy-content="How strong the attraction force between points should be? Higher values makes liquid points stick together.">
+    <label
+      data-tippy-content="How strong the attraction force between points should be? Higher values makes liquid points stick together.">
       <div>
         Attraction
       </div>
       <input type="range" id="anti-dencity-power" name="anti-dencity-power" min="0" max="50" value="1" />
     </label>
 
-    <label data-tippy-content='How strong the viscosity should be? Higher values make liquid points flow together ("if they move, I move too"). Higher values make liquid more "stiff", like honey.'>
+    <label
+      data-tippy-content='How strong the viscosity should be? Higher values make liquid points flow together ("if they move, I move too"). Higher values make liquid more "stiff", like honey.'>
       <div>
         Viscosity
       </div>

@@ -158,10 +158,18 @@ const staticPoints = points.filter(point => point.isStatic).length
 console.log(`Static points: ${staticPoints}`)
 
 const countInput = document.querySelector('input#count') as HTMLInputElement;
+const deleteObstaclesButton = document.querySelector('button#delete-obstacles') as HTMLButtonElement;
 
 if (countInput) {
     countInput.value = INITIAL_POINTS_COUNT.toString();
     countInput.setAttribute('max', MAX_POINTS_COUNT.toString());
+}
+
+if (deleteObstaclesButton) {
+    deleteObstaclesButton.addEventListener('click', () => {
+        points = points.filter(point => !point.isStatic);
+        deleteObstaclesButton.remove();
+    });
 }
 
 initControl('input#count', (e) => {
