@@ -89,31 +89,31 @@
       Collision
     </label> -->
 
-    <label>
+    <label data-tippy-content="Should points be rendered as a single mass of liquid?">
       <input type="checkbox" id="custom-sizes" name="custom-sizes" checked />
       Post-processing
     </label>
 
-    <label>
+    <label data-tippy-content="Should acceleration vectors (red) be rendered?">
       <input type="checkbox" id="show-arrows" name="show-arrows" />
       Show acceleration
     </label>
 
-    <label>
+    <label data-tippy-content="Should velocity vectors (blue) be rendered?">
       <input type="checkbox" id="show-arrows-2" name="show-arrows-2" />
       Show velocity
     </label>
 
     <hr>
 
-    <label>
+    <label data-tippy-content="How many frames per second should be rendered? Only affects the rendering speed, not the simulation speed.">
       <div>
         Rendering FPS
       </div>
       <input type="range" id="maxFps" name="maxFps" min="1" max="120" value="45" />
     </label>
 
-    <label>
+    <label data-tippy-content="How fast the simulation should run? Lower values increase the simulation quality.">
       <div>
         Simulation speed
       </div>
@@ -122,14 +122,14 @@
 
     <hr>
 
-    <label id="gravityPowerLabel">
+    <label id="gravityPowerLabel" data-tippy-content="How strong the gravity should be? Value of 98 here equals to Earth's gravity.">
       <div>
         Gravity power
       </div>
       <input type="range" id="gravityPower" name="gravityPower" min="1" max="200" value="98" />
     </label>
 
-    <label>
+    <label data-tippy-content="How many points should be in the simulation?">
       <div>
         Points count
       </div>
@@ -138,14 +138,14 @@
 
     <hr>
 
-    <label>
+    <label data-tippy-content="How strong the attraction force between points should be? Higher values makes liquid points stick together.">
       <div>
         Attraction
       </div>
       <input type="range" id="anti-dencity-power" name="anti-dencity-power" min="0" max="50" value="1" />
     </label>
 
-    <label>
+    <label data-tippy-content='How strong the viscosity should be? Higher values make liquid points flow together ("if they move, I move too"). Higher values make liquid more "sticky", like honey.'>
       <div>
         Viscosity
       </div>
@@ -154,16 +154,25 @@
 
     <hr>
 
+    <div class="status"></div>
+
     <div>
       <a target="_blank" href="https://a-laud.ru">Author</a>
       <br>
       <a target="_blank" href="https://github.com/kshshe/sandbox-3">GitHub</a>
     </div>
-
-    <div class="status"></div>
   </div>
-  <script src="./gpu-browser.js"></script>
+  <script defer src="./gpu-browser.js"></script>
   <script defer type="module" src="engine/index.ts"></script>
+  <script defer src="https://unpkg.com/@popperjs/core@2"></script>
+  <script defer src="https://unpkg.com/tippy.js@6"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      tippy('[data-tippy-content]', {
+        placement: 'left',
+      });
+    });
+  </script>
 </body>
 
 </html>
