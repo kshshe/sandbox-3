@@ -128,7 +128,7 @@ for (let i = 0; i < RANDOM_ROWS_COUNT; i++) {
     const randomDirectionX = Math.random()
     const randomDirectionY = Math.random()
     const randomLength = Math.round(Math.random() * 100) + 200
-    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength, 3, i === 0)
+    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength, 2, i === 0)
 }
 
 const maxHeight = Math.min(300, window.innerHeight / 4);
