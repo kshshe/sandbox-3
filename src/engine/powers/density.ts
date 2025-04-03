@@ -145,15 +145,15 @@ const initRangeControl = (selector: string, constantKey: keyof typeof constants,
     if (!input) {
         return
     }
+    const modifier = inputModifiers[constantKey] || 1;
 
     input.min = `${from}`;
     input.max = `${to}`;
     input.step = `${step}`;
-    input.value = `${constants[constantKey]}`;
+    input.value = `${constants[constantKey] / modifier}`;
 
     initControl(selector, (e) => {
         const input = e.target as HTMLInputElement;
-        const modifier = inputModifiers[constantKey] || 1;
         const value = parseInt(input.value) * modifier;
         console.log(`Set ${constantKey} to ${value}`)
         constants[constantKey] = value;
