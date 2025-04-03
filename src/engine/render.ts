@@ -226,22 +226,22 @@ export const initRender = () => {
             // reg arrows to represent acceleration
             nonStaticPoints.forEach(point => {
                 const color = `rgb(200, 0, 0)`;
-                ctx.beginPath();
-                ctx.moveTo(point.position.x, point.position.y);
-                ctx.lineTo(point.position.x + point.acceleration.x, point.position.y + point.acceleration.y);
-                ctx.strokeStyle = color;
-                ctx.stroke();
+                overlayCtx.beginPath();
+                overlayCtx.moveTo(point.position.x, point.position.y);
+                overlayCtx.lineTo(point.position.x + point.acceleration.x, point.position.y + point.acceleration.y);
+                overlayCtx.strokeStyle = color;
+                overlayCtx.stroke();
             });
         }
 
         if (showSpeedArrows) {
             nonStaticPoints.forEach(point => {
                 const color = `rgb(0, 0, 200)`;
-                ctx.beginPath();
-                ctx.moveTo(point.position.x, point.position.y);
-                ctx.lineTo(point.position.x + point.velocity.x, point.position.y + point.velocity.y);
-                ctx.strokeStyle = color;
-                ctx.stroke();
+                overlayCtx.beginPath();
+                overlayCtx.moveTo(point.position.x, point.position.y);
+                overlayCtx.lineTo(point.position.x + point.velocity.x, point.position.y + point.velocity.y);
+                overlayCtx.strokeStyle = color;
+                overlayCtx.stroke();
             });
         }
 
