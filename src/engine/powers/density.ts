@@ -168,7 +168,7 @@ initRangeControl('input#anti-dencity-power', 'baseAntiDensityForce', {
 
 initRangeControl('input#viscosity-power', 'viscosity', {
     from: 0,
-    to: 500,
+    to: 0.5 / inputModifiers.viscosity,
     step: 1,
 });
 
