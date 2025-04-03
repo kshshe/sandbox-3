@@ -125,7 +125,7 @@ const constants = {
     // How much nearby points attract each other
     baseAntiDensityForce: 30, // 0 to 100
     // How much nearby points share speed
-    viscosity: 0.2, // 0 to 0.5
+    viscosity: 0.35, // 0 to 0.5
 }
 
 const inputModifiers = {
@@ -147,9 +147,9 @@ const initRangeControl = (selector: string, constantKey: keyof typeof constants,
     }
     const modifier = inputModifiers[constantKey] || 1;
 
-    input.min = `${from}`;
-    input.max = `${to}`;
-    input.step = `${step}`;
+    input.min = `${from / modifier}`;
+    input.max = `${to / modifier}`;
+    input.step = `${step / modifier}`;
     input.value = `${constants[constantKey] / modifier}`;
 
     initControl(selector, (e) => {
@@ -167,9 +167,9 @@ initRangeControl('input#anti-dencity-power', 'baseAntiDensityForce', {
 });
 
 initRangeControl('input#viscosity-power', 'viscosity', {
-    from: 0,
-    to: 0.5 / inputModifiers.viscosity,
-    step: 1,
+    from: 0.1,
+    to: 0.5,
+    step: 0.01,
 });
 
 export const densityProcessor: TPowerProcessorParallel = (points) => {
