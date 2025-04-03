@@ -149,6 +149,7 @@ const initRangeControl = (selector: string, constantKey: keyof typeof constants,
     input.min = `${from}`;
     input.max = `${to}`;
     input.step = `${step}`;
+    input.value = `${constants[constantKey]}`;
 
     initControl(selector, (e) => {
         const input = e.target as HTMLInputElement;
@@ -157,7 +158,6 @@ const initRangeControl = (selector: string, constantKey: keyof typeof constants,
         console.log(`Set ${constantKey} to ${value}`)
         constants[constantKey] = value;
     });
-    input.value = `${constants[constantKey]}`;
 }
 
 initRangeControl('input#anti-dencity-power', 'baseAntiDensityForce', {
