@@ -9,6 +9,7 @@ let customSizes = true;
 let showArrows = false;
 let showSpeedArrows = false;
 let TARGET_FPS = 45;
+const maxSpeedLengthForRed = 20;
 
 initControl('input#maxFps', (e) => {
     const input = e.target as HTMLInputElement;
@@ -211,8 +212,16 @@ export const initRender = () => {
             ctx.fillRect(x, y, size, size);
 
             if (customSizes) {
-                overlayCtx.fillStyle = `rgb(189, 210, 253)`;
-                overlayCtx.fillRect(point.position.x - 1, point.position.y - 1, 2, 2);
+                const speedLength = getVectorLength(point.velocity);
+                const speedToColor = Math.min(speedLength / maxSpeedLengthForRed, 1) * 255;
+                const r = speedToColor;
+                const g = 255 - speedToColor / 2;
+                const b = 255 - speedToColor;
+
+                const size = 2 + Math.min(speedLength / maxSpeedLengthForRed, 1);
+                const halfSize = size / 2;
+                overlayCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
             }
         });
 
