@@ -50,26 +50,20 @@ const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = fals
     isStatic,
 });
 
-const newPointX = window.innerWidth / 2
-const newPointY = window.innerHeight / 2
+const newPointX = 100
+const newPointY = window.innerHeight * 0.25
 const addingInterval = setInterval(() => {
     if (paused) {
         return;
     }
     if (points.length < INITIAL_POINTS_COUNT) {
-        const x = newPointX + Math.random() * 100 - 50
-        const y = newPointY + Math.random() * 100 - 50
+        const x = newPointX + Math.random() * 200 - 100
+        const y = newPointY + Math.random() * 200 - 100
         points.push(getNewPoint(x, y));
     } else {
         clearInterval(addingInterval);
     }
-}, 1);
-
-// draw a static square in the middle of the screen
-const width = window.innerWidth / 4
-const height = window.innerHeight / 6
-const x = window.innerWidth / 2 - width / 2
-const y = window.innerHeight / 2 - height / 2
+}, 8);
 
 const createRow = (fromX: number, fromY: number, toX: number, toY: number, spacing: number = 3, rotating = false) => {
     // Calculate the number of points to create
@@ -121,38 +115,33 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     }
 };
 
-const RANDOM_ROWS_COUNT = 1;
-for (let i = 0; i < RANDOM_ROWS_COUNT; i++) {
-    const randomFromX = Math.round(Math.random() * window.innerWidth)
-    const randomFromY = Math.round(Math.random() * window.innerHeight)
-    const randomDirectionX = Math.random()
-    const randomDirectionY = Math.random()
-    const randomLength = Math.round(Math.random() * 100) + 200
-    createRow(randomFromX, randomFromY, randomFromX + randomDirectionX * randomLength, randomFromY + randomDirectionY * randomLength, 2, i === 0)
+const STATIC_BORDER_THICKNESS_ROWS = 2;
+const STAIR_STEPS_MIN = 2;
+const STAIR_STEPS_MAX = 7;
+const STAIR_LAYER_OFFSET_PX = 3;
+
+const stairStepsCount = Math.floor(Math.random() * (STAIR_STEPS_MAX - STAIR_STEPS_MIN + 1)) + STAIR_STEPS_MIN;
+
+for (let layer = 0; layer < STATIC_BORDER_THICKNESS_ROWS; layer++) {
+    const startX = BORDERS.minX + 0.1;
+    const startY = window.innerHeight * 0.5 - layer * STAIR_LAYER_OFFSET_PX;
+    const endY = window.innerHeight - layer * STAIR_LAYER_OFFSET_PX;
+    const stepWidth = (window.innerWidth - startX) / (stairStepsCount + 1);
+    const endX = BORDERS.maxX - stepWidth;
+    const stepHeight = (endY - startY) / stairStepsCount;
+    let currentX = startX;
+    let currentY = startY;
+
+    for (let step = 0; step < stairStepsCount; step++) {
+        const nextX = Math.min(endX, startX + stepWidth * (step + 1));
+        createRow(currentX, currentY, nextX, currentY);
+        currentX = nextX;
+
+        const nextY = startY + stepHeight * (step + 1);
+        createRow(currentX, currentY, currentX, nextY);
+        currentY = nextY;
+    }
 }
-
-const maxHeight = Math.min(300, window.innerHeight / 4);
-const left = Math.min(200, window.innerWidth / 4)
-createRow(left, window.innerHeight - maxHeight, left, window.innerHeight);
-createRow(left + 3, window.innerHeight - maxHeight, left + 3, window.innerHeight);
-createRow(left + 6, window.innerHeight - maxHeight, left + 6, window.innerHeight);
-
-// Bottom line
-createRow(x, y + height - 30, x + width, y + height);
-createRow(x, y + height + 3 - 30, x + width, y + height + 3);
-
-// Top line
-createRow(x, y, x + width, y);
-createRow(x, y + 3, x + width, y + 3);
-
-// Left line
-createRow(x, y, x, y + height - 30);
-createRow(x + 3, y, x + 3, y + height - 30);
-
-// Right line
-createRow(x + width, y, x + width, y + height - 40);
-createRow(x + width + 3, y, x + width + 3, y + height - 40);
-
 
 const staticPoints = points.filter(point => point.isStatic).length
 console.log(`Static points: ${staticPoints}`)

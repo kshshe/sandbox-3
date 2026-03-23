@@ -108,6 +108,9 @@ export const collisionProcessor: TPowerProcessorParallel = (points) => {
     for (const index in points) {
         const pointAcceleration = kernelResult[index] as [number, number, number, number];
         const point = points[index];
+        if (point.isStatic) {
+            continue;
+        }
         point.velocity.x += pointAcceleration[0];
         point.velocity.y += pointAcceleration[1];
         point.position.x += pointAcceleration[2];
