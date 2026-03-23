@@ -213,14 +213,10 @@ export const initRender = () => {
 
             if (customSizes) {
                 const speedLength = getVectorLength(point.velocity);
-                const speedToColor = Math.min(speedLength / maxSpeedLengthForRed, 1) * 255;
-                const r = speedToColor;
-                const g = 255 - speedToColor / 2;
-                const b = 255 - speedToColor;
 
                 const size = 2 + Math.min(speedLength / maxSpeedLengthForRed, 1);
                 const halfSize = size / 2;
-                overlayCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                overlayCtx.fillStyle = `rgb(0, 0, 255)`;
                 overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
             }
         });
