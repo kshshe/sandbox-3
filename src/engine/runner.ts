@@ -32,6 +32,11 @@ window.getAverageSpeed = () => {
 }
 
 const REFLECTION = 0.45;
+const SPAWN_HALF_SIZE = 100;
+const SPAWN_BOTTOM_LEFT_GAP = 50;
+const SPAWN_BORDER_THICKNESS_ROWS = 2;
+const SPAWN_BORDER_LAYER_OFFSET_PX = 3;
+const SPAWN_POINT_JITTER = 0.1;
 
 const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = false): TPoint => ({
     position: {
@@ -52,20 +57,29 @@ const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = fals
 
 const newPointX = 100
 const newPointY = window.innerHeight * 0.25
+
 const addingInterval = setInterval(() => {
     if (paused) {
         return;
     }
     if (points.length < INITIAL_POINTS_COUNT) {
-        const x = newPointX + Math.random() * 200 - 100
-        const y = newPointY + Math.random() * 200 - 100
+        const x = newPointX + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
+        const y = newPointY + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
         points.push(getNewPoint(x, y));
     } else {
         clearInterval(addingInterval);
     }
-}, 8);
+});
 
-const createRow = (fromX: number, fromY: number, toX: number, toY: number, spacing: number = 3, rotating = false) => {
+const createRow = (
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    spacing: number = 3,
+    rotating = false,
+    jitter: number = 0,
+) => {
     // Calculate the number of points to create
     const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
     const count = Math.floor(distance / spacing);
@@ -79,8 +93,8 @@ const createRow = (fromX: number, fromY: number, toX: number, toY: number, spaci
     const rowPoints: TPoint[] = [];
     
     for (let i = 0; i <= count; i++) {
-        const x = fromX + xIncrement * i;
-        const y = fromY + yIncrement * i;
+        const x = fromX + xIncrement * i + (Math.random() * 2 - 1) * jitter;
+        const y = fromY + yIncrement * i + (Math.random() * 2 - 1) * jitter;
         const newPoint = getNewPoint(x, y, true, rotating);
         rowPoints.push(newPoint);
         points.push(newPoint);
@@ -141,6 +155,24 @@ for (let layer = 0; layer < STATIC_BORDER_THICKNESS_ROWS; layer++) {
         createRow(currentX, currentY, currentX, nextY);
         currentY = nextY;
     }
+}
+
+const spawnMinX = newPointX - SPAWN_HALF_SIZE;
+const spawnMaxX = newPointX + SPAWN_HALF_SIZE;
+const spawnMinY = newPointY - SPAWN_HALF_SIZE;
+const spawnMaxY = newPointY + SPAWN_HALF_SIZE;
+
+for (let layer = 0; layer < SPAWN_BORDER_THICKNESS_ROWS; layer++) {
+    const layerOffset = layer * SPAWN_BORDER_LAYER_OFFSET_PX;
+    const minX = spawnMinX - layerOffset;
+    const maxX = spawnMaxX + layerOffset;
+    const minY = spawnMinY - layerOffset;
+    const maxY = spawnMaxY + layerOffset;
+
+    createRow(minX, minY, maxX, minY, 3, false, SPAWN_POINT_JITTER);
+    createRow(minX, minY, minX, maxY, 3, false, SPAWN_POINT_JITTER);
+    createRow(maxX, minY, maxX, maxY, 3, false, SPAWN_POINT_JITTER);
+    createRow(minX + SPAWN_BOTTOM_LEFT_GAP, maxY, maxX, maxY, 3, false, SPAWN_POINT_JITTER);
 }
 
 const staticPoints = points.filter(point => point.isStatic).length
