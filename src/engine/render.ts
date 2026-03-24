@@ -216,7 +216,7 @@ export const initRender = () => {
 
                 const size = 2 + Math.min(speedLength / maxSpeedLengthForRed, 1);
                 const halfSize = size / 2;
-                overlayCtx.fillStyle = `rgb(0, 0, 255)`;
+                overlayCtx.fillStyle = `rgb(64, 121, 254)`;
                 overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
             }
         });
