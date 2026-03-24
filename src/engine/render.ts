@@ -212,11 +212,9 @@ export const initRender = () => {
             ctx.fillRect(x, y, size, size);
 
             if (customSizes) {
-                const speedLength = getVectorLength(point.velocity);
-
-                const size = 2 + Math.min(speedLength / maxSpeedLengthForRed, 1);
-                const halfSize = size / 2;
-                overlayCtx.fillStyle = `rgb(64, 121, 254)`;
+                const size = 2
+                const halfSize = 1
+                overlayCtx.fillStyle = `rgb(96, 144, 255)`;
                 overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
             }
         });
