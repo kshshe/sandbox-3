@@ -1,3 +1,15 @@
+import { isSmallScreen } from "./constants";
+
+const controls = document.querySelector('.controls') as HTMLDivElement | null;
+if (isSmallScreen && controls) {
+    const children = controls.children;
+    for (const child of children) {
+        if (child instanceof HTMLElement && !child.hasAttribute('data-mobile-visible')) {
+            child.style.display = 'none';
+        }
+    }
+}
+
 export const initControl = (selector: string, callback: (e: Event) => void) => {
     const element = document.querySelector(selector);
     if (!element) {

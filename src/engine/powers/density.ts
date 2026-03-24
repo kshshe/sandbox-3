@@ -125,7 +125,7 @@ const constants = {
     // How much nearby points attract each other
     baseAntiDensityForce: 30, // 0 to 100
     // How much nearby points share speed
-    viscosity: 0.35, // 0 to 0.5
+    viscosity: 0.24, // 0 to 0.5
 }
 
 const inputModifiers = {

@@ -13,6 +13,7 @@ let paused: boolean = false;
 let speedMultiplier = 7;
 
 export let points: TPoint[] = [];
+const getNonStaticPointsCount = () => points.filter(point => !point.isStatic).length;
 
 declare global {
     interface Window {
@@ -62,7 +63,7 @@ const addingInterval = setInterval(() => {
     if (paused) {
         return;
     }
-    if (points.length < INITIAL_POINTS_COUNT) {
+    if (getNonStaticPointsCount() < INITIAL_POINTS_COUNT) {
         const x = newPointX + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
         const y = newPointY + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
         points.push(getNewPoint(x, y));
@@ -195,9 +196,10 @@ if (deleteObstaclesButton) {
 
 initControl('input#count', (e) => {
     const newCount = parseInt((e.target as HTMLInputElement).value);
-    if (newCount > points.length) {
-        const allowedToAdd = MAX_POINTS_COUNT - points.length;
-        const toAdd = Math.min(allowedToAdd, newCount - points.length);
+    const nonStaticPointsCount = getNonStaticPointsCount();
+    if (newCount > nonStaticPointsCount) {
+        const allowedToAdd = Math.max(0, MAX_POINTS_COUNT - nonStaticPointsCount);
+        const toAdd = Math.min(allowedToAdd, newCount - nonStaticPointsCount);
         for (let i = 0; i < toAdd; i++) {
             points.push(getNewPoint());
         }

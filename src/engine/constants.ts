@@ -7,9 +7,9 @@ export const BORDERS = {
     maxY: window.innerHeight,
 }
 
-const isSmallScreen = window.innerWidth < 768;
+export const isSmallScreen = window.innerWidth < 768;
 
-export const INITIAL_POINTS_COUNT = isSmallScreen ? 800 : 3200;
+export const INITIAL_POINTS_COUNT = isSmallScreen ? 800 : 2700;
 export const MAX_POINTS_COUNT = isSmallScreen ? 1500 : 5000;
 
 export const MAX_ACCELERATION = 400;
