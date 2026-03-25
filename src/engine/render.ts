@@ -188,6 +188,7 @@ export const initRender = () => {
 
     let lastFrameTime = Date.now();
 
+    const bigPointSize = 30;
     const render = () => {
         const now = Date.now();
         const isEnoughtToTargetFps = now - lastFrameTime > 1000 / TARGET_FPS;
@@ -199,7 +200,7 @@ export const initRender = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
         overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-        const size = customSizes ? 30 : 4;
+        const size = customSizes ? bigPointSize : 4;
         const color = `rgb(0, 0, 255)`;
 
         const nonStaticPoints = points.filter(point => !point.isStatic);
@@ -216,6 +217,29 @@ export const initRender = () => {
                 const halfSize = 1
                 overlayCtx.fillStyle = `rgb(96, 144, 255)`;
                 overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
+
+                // Draw an extra dot at the opposite side of point.velocity vector
+                const oppositeVelocity = {
+                    x: -point.velocity.x,
+                    y: -point.velocity.y,
+                };
+
+                const maxCoordinateInOppositeVelocity = Math.max(Math.abs(oppositeVelocity.x), Math.abs(oppositeVelocity.y));
+
+                if (maxCoordinateInOppositeVelocity > bigPointSize) {
+                    const factor = bigPointSize / maxCoordinateInOppositeVelocity;
+                    oppositeVelocity.x *= factor;
+                    oppositeVelocity.y *= factor;
+                }
+
+                const oppositePosition = {
+                    x: point.position.x + oppositeVelocity.x / 2,
+                    y: point.position.y + oppositeVelocity.y / 2,
+                };
+
+                const velocitySize = bigPointSize * 0.75;
+                ctx.fillStyle = color;
+                ctx.fillRect(oppositePosition.x - velocitySize / 2, oppositePosition.y - velocitySize / 2, velocitySize, velocitySize);
             }
         });
 
