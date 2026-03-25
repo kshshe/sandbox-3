@@ -39,7 +39,7 @@ canvas {
     cursor: none;
 
     &.filtered {
-        filter: blur(9px) brightness(4) contrast(200);
+        filter: blur(9px) brightness(3) contrast(15);
         background: rgba(255, 255, 255, 0.3);
     }
 }
