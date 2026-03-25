@@ -215,7 +215,7 @@ export const initRender = () => {
             if (customSizes) {
                 const size = 2
                 const halfSize = 1
-                overlayCtx.fillStyle = `rgb(96, 144, 255)`;
+                overlayCtx.fillStyle = `rgb(162, 198, 255)`;
                 overlayCtx.fillRect(point.position.x - halfSize, point.position.y - halfSize, size, size);
 
                 // Draw an extra dot at the opposite side of point.velocity vector
