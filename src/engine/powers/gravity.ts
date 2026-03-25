@@ -6,6 +6,7 @@ import { TPowerProcessor } from "./powers";
 
 let GRAVITY_ACCELERATION = 9.8
 let isCentered = false
+let isFromCenter = false
 let isLeft = false
 let isRight = false
 let isTop = false
@@ -13,6 +14,7 @@ let isMotion = false
 
 initControl('select#gravityDirection', async (e) => {
     isCentered = (e.target as HTMLInputElement)?.value === 'center'
+    isFromCenter = (e.target as HTMLInputElement)?.value === 'from-center'
     isLeft = (e.target as HTMLInputElement)?.value === 'left'
     isRight = (e.target as HTMLInputElement)?.value === 'right'
     isTop = (e.target as HTMLInputElement)?.value === 'top'
@@ -20,6 +22,7 @@ initControl('select#gravityDirection', async (e) => {
 
     console.log({
         isCentered,
+        isFromCenter,
         isLeft,
         isRight,
         isTop,
@@ -107,6 +110,22 @@ export const gravityProcessor: TPowerProcessor = (point) => {
         const directionToTheCenterNormalized = multiplyVector(directionToTheCenter, 1 / directionToTheCenterLength)
 
         const gravityForce = multiplyVector(directionToTheCenterNormalized, GRAVITY_ACCELERATION)
+
+        point.acceleration.x += gravityForce.x
+        point.acceleration.y += gravityForce.y
+        return
+    }
+    if (isFromCenter) {
+        const directionFromTheCenter: TVector = {
+            x: point.position.x - CENTER_OF_THE_SCREEN.x,
+            y: point.position.y - CENTER_OF_THE_SCREEN.y,
+        }
+
+        const directionFromTheCenterLength = getVectorLength(directionFromTheCenter)
+
+        const directionFromTheCenterNormalized = multiplyVector(directionFromTheCenter, 1 / directionFromTheCenterLength)
+
+        const gravityForce = multiplyVector(directionFromTheCenterNormalized, GRAVITY_ACCELERATION)
 
         point.acceleration.x += gravityForce.x
         point.acceleration.y += gravityForce.y
