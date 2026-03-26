@@ -226,7 +226,7 @@ export const initRender = () => {
 
                 const maxCoordinateInOppositeVelocity = Math.max(Math.abs(oppositeVelocity.x), Math.abs(oppositeVelocity.y));
 
-                if (maxCoordinateInOppositeVelocity > bigPointSize) {
+                if (maxCoordinateInOppositeVelocity > bigPointSize * 1.25) {
                     const factor = bigPointSize / maxCoordinateInOppositeVelocity;
                     oppositeVelocity.x *= factor;
                     oppositeVelocity.y *= factor;
