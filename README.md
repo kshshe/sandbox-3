@@ -1,4 +1,4 @@
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Ffluid.a-laud.ru)](https://fluid.a-laud.ru)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Ffluid.alekseilaud.dev)](https://fluid.alekseilaud.dev)
 
 # Fluid Simulation
 
@@ -18,7 +18,7 @@ A GPU-accelerated fluid physics simulation web application that renders dynamic 
 
 ## Demo
 
-Visit the live demo at: [https://fluid.a-laud.ru](https://fluid.a-laud.ru)
+Visit the live demo at: [https://fluid.alekseilaud.dev](https://fluid.alekseilaud.dev)
 
 ## Controls
 
