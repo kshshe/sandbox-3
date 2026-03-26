@@ -285,7 +285,7 @@ initControl('input#speed', (e) => {
 
 let lastStepDuration = 0;
 
-let slowdownPower = 999;
+let slowdownPower = 980;
 
 initControl('input#slowdown-power', (e) => {
     slowdownPower = parseInt((e.target as HTMLInputElement).value);
