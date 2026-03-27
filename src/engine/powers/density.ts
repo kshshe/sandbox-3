@@ -128,6 +128,13 @@ const constants = {
     viscosity: 0.24, // 0 to 0.5
 }
 
+const DEFAULT_GRAVITY_POWER = 98;
+const MIN_GRAVITY_DENSITY_COEFFICIENT = 0.5;
+const MAX_GRAVITY_DENSITY_COEFFICIENT = 1.75;
+
+let isGravityEnabled = true;
+let currentGravityPower = DEFAULT_GRAVITY_POWER;
+
 const inputModifiers = {
     viscosity: 0.01,
 }
@@ -172,6 +179,19 @@ initRangeControl('input#viscosity-power', 'viscosity', {
     step: 0.01,
 });
 
+initControl('input#gravity', (e) => {
+    const input = e.target as HTMLInputElement;
+    isGravityEnabled = input.checked;
+}, false);
+
+initControl('input#gravityPower', (e) => {
+    const input = e.target as HTMLInputElement;
+    const parsedValue = Number(input.value);
+    if (Number.isFinite(parsedValue)) {
+        currentGravityPower = parsedValue;
+    }
+}, false);
+
 export const densityProcessor: TPowerProcessorParallel = (points) => {
     const kernelOutputSize = getDencityAcceleration.output[0];
     const neededSize = points.length;
@@ -215,13 +235,20 @@ export const densityProcessor: TPowerProcessorParallel = (points) => {
     const flattenChunksLength = flattenChunks.length;
     const chunksStartingIndicesAndLengthsLength = chunksStartingIndicesAndLengths.length;
 
+    const gravityDensityCoefficient = !isGravityEnabled
+        ? MAX_GRAVITY_DENSITY_COEFFICIENT
+        : Math.max(
+            MIN_GRAVITY_DENSITY_COEFFICIENT,
+            MAX_GRAVITY_DENSITY_COEFFICIENT - (0.75 * (currentGravityPower / DEFAULT_GRAVITY_POWER)),
+        );
+
     const kernelInput = [
         [
             constants.pointsCount,
             constants.maxDistance,
             constants.baseForce,
-            constants.baseAntiDensityForce,
-            constants.viscosity,
+            constants.baseAntiDensityForce * gravityDensityCoefficient,
+            constants.viscosity * gravityDensityCoefficient,
             flattenChunksLength,
             chunksStartingIndicesAndLengthsLength,
             gridWidth,
