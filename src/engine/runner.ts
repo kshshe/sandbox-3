@@ -1,6 +1,6 @@
 import { BORDERS, INITIAL_POINTS_COUNT, MAX_ACCELERATION, MAX_FRAME_TIME, MAX_POINTS_COUNT, MAX_SPEED, POINT_RADIUS } from "./constants";
 import { initControl } from "./controls";
-import { TPoint } from "./data.t";
+import { TPoint, TVector } from "./data.t";
 import { powers } from "./powers";
 import { getVectorLength, multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
@@ -14,6 +14,16 @@ let speedMultiplier = 7;
 
 export let points: TPoint[] = [];
 const getNonStaticPointsCount = () => points.filter(point => !point.isStatic).length;
+const getStaticPointsCount = () => points.filter(point => point.isStatic).length;
+const deleteObstaclesButton = document.querySelector('button#delete-obstacles') as HTMLButtonElement | null;
+
+const updateDeleteObstaclesButtonVisibility = () => {
+    if (!deleteObstaclesButton) {
+        return;
+    }
+
+    deleteObstaclesButton.style.display = getStaticPointsCount() > 0 ? '' : 'none';
+};
 
 declare global {
     interface Window {
@@ -39,7 +49,7 @@ const SPAWN_BORDER_THICKNESS_ROWS = 2;
 const SPAWN_BORDER_LAYER_OFFSET_PX = 3;
 const SPAWN_POINT_JITTER = 0.1;
 
-const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = false): TPoint => ({
+export const createPoint = (x?: number, y?: number, isStatic?: boolean, rotating = false): TPoint => ({
     position: {
         x: x || (Math.random() * (BORDERS.maxX - BORDERS.minX) + BORDERS.minX),
         y: y || (Math.random() * (BORDERS.maxY - BORDERS.minY) + BORDERS.minY),
@@ -56,6 +66,48 @@ const getNewPoint = (x?: number, y?: number, isStatic?: boolean, rotating = fals
     isStatic,
 });
 
+const WATER_BRUSH_POINTS = 1;
+const WATER_BRUSH_RADIUS = 50;
+const OBSTACLE_BRUSH_OFFSETS: TVector[] = [
+    { x: 0, y: 0 },
+    { x: 4, y: 0 },
+    { x: -4, y: 0 },
+    { x: 0, y: 4 },
+    { x: 0, y: -4 },
+];
+
+const clampPosition = (position: TVector): TVector => ({
+    x: Math.min(BORDERS.maxX - POINT_RADIUS, Math.max(BORDERS.minX + POINT_RADIUS, position.x)),
+    y: Math.min(BORDERS.maxY - POINT_RADIUS, Math.max(BORDERS.minY + POINT_RADIUS, position.y)),
+});
+
+export const addWaterAt = (position: TVector) => {
+    const availableToAdd = Math.max(0, MAX_POINTS_COUNT - getNonStaticPointsCount());
+    const toAdd = Math.min(availableToAdd, WATER_BRUSH_POINTS);
+
+    for (let i = 0; i < toAdd; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * WATER_BRUSH_RADIUS;
+        const targetPosition = clampPosition({
+            x: position.x + Math.cos(angle) * distance,
+            y: position.y + Math.sin(angle) * distance,
+        });
+        points.push(createPoint(targetPosition.x, targetPosition.y));
+    }
+};
+
+export const addObstacleAt = (position: TVector) => {
+    for (const offset of OBSTACLE_BRUSH_OFFSETS) {
+        const targetPosition = clampPosition({
+            x: position.x + offset.x,
+            y: position.y + offset.y,
+        });
+        points.push(createPoint(targetPosition.x, targetPosition.y, true));
+    }
+
+    updateDeleteObstaclesButtonVisibility();
+};
+
 const newPointX = 100
 const newPointY = window.innerHeight * 0.25
 
@@ -66,7 +118,7 @@ const addingInterval = setInterval(() => {
     if (getNonStaticPointsCount() < INITIAL_POINTS_COUNT) {
         const x = newPointX + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
         const y = newPointY + Math.random() * (SPAWN_HALF_SIZE * 2) - SPAWN_HALF_SIZE
-        points.push(getNewPoint(x, y));
+        points.push(createPoint(x, y));
     } else {
         clearInterval(addingInterval);
     }
@@ -96,7 +148,7 @@ const createRow = (
     for (let i = 0; i <= count; i++) {
         const x = fromX + xIncrement * i + (Math.random() * 2 - 1) * jitter;
         const y = fromY + yIncrement * i + (Math.random() * 2 - 1) * jitter;
-        const newPoint = getNewPoint(x, y, true, rotating);
+        const newPoint = createPoint(x, y, true, rotating);
         rowPoints.push(newPoint);
         points.push(newPoint);
     }
@@ -176,11 +228,10 @@ for (let layer = 0; layer < SPAWN_BORDER_THICKNESS_ROWS; layer++) {
     createRow(minX + SPAWN_BOTTOM_LEFT_GAP, maxY, maxX, maxY, 3, false, SPAWN_POINT_JITTER);
 }
 
-const staticPoints = points.filter(point => point.isStatic).length
+const staticPoints = getStaticPointsCount();
 console.log(`Static points: ${staticPoints}`)
 
 const countInput = document.querySelector('input#count') as HTMLInputElement;
-const deleteObstaclesButton = document.querySelector('button#delete-obstacles') as HTMLButtonElement;
 
 if (countInput) {
     countInput.value = INITIAL_POINTS_COUNT.toString();
@@ -190,9 +241,11 @@ if (countInput) {
 if (deleteObstaclesButton) {
     deleteObstaclesButton.addEventListener('click', () => {
         points = points.filter(point => !point.isStatic);
-        deleteObstaclesButton.remove();
+        updateDeleteObstaclesButtonVisibility();
     });
 }
+
+updateDeleteObstaclesButtonVisibility();
 
 initControl('input#count', (e) => {
     const newCount = parseInt((e.target as HTMLInputElement).value);
@@ -201,7 +254,7 @@ initControl('input#count', (e) => {
         const allowedToAdd = Math.max(0, MAX_POINTS_COUNT - nonStaticPointsCount);
         const toAdd = Math.min(allowedToAdd, newCount - nonStaticPointsCount);
         for (let i = 0; i < toAdd; i++) {
-            points.push(getNewPoint());
+            points.push(createPoint());
         }
     } else {
         const nonStaticPoints = points.filter(point => !point.isStatic).slice(0, newCount);

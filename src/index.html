@@ -37,7 +37,7 @@
 		C80.233,41.004,154.938,40.068,154.938,40.068z" />
         </g>
       </svg>
-      <span>Attract</span>
+      <span id="left-mouse-hint">Attract</span>
     </div>
 
     <div class="hint">
@@ -60,6 +60,18 @@
       </svg>
       <span>Repel</span>
     </div>
+
+    <label data-mobile-visible data-tippy-content="Choose what the mouse does while pressed.">
+      <div>
+        Mouse mode
+      </div>
+      <select id="mouse-mode">
+        <option value="attract" selected>Attract</option>
+        <option value="repel">Repel</option>
+        <option value="draw-obstacles">Draw obstacles</option>
+        <option value="add-water">Add water</option>
+      </select>
+    </label>
 
     <hr>
 
