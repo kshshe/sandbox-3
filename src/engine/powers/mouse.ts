@@ -3,14 +3,11 @@ import { TPowerProcessor } from "./powers";
 import { getDistance } from "../utils/vector";
 
 let mousePosition: TVector | null = null;
-let mouseForceMode: "attract" | "repel" = "attract";
+let mouseDirection: 1 | -1 = 1;
 
-export const setMousePosition = (
-    position: TVector | null,
-    forceMode: typeof mouseForceMode = mouseForceMode,
-) => {
+export const setMousePosition = (position: TVector | null, direction: typeof mouseDirection = mouseDirection) => {
     mousePosition = position;
-    mouseForceMode = forceMode;
+    mouseDirection = direction;
 }
 
 export const MAX_MOUSE_DISTANCE = 150;
@@ -29,7 +26,7 @@ export const mouseProcessor: TPowerProcessor = (point) => {
         return;
     }
 
-    const force = (mouseForceMode === "attract" ? 1 : -1) * BASE_FORCE;
+    const force = mouseDirection * BASE_FORCE;
     const direction = {
         x: mousePosition.x - point.position.x,
         y: mousePosition.y - point.position.y,

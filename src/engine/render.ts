@@ -2,55 +2,14 @@ import { BORDERS } from "./constants";
 import { initControl } from "./controls";
 import { TVector } from "./data.t";
 import { setMousePosition } from "./powers/mouse";
-import { addObstacleAt, addWaterAt, points, removeObstacleAt, removeWaterAt } from "./runner";
-import { getDistance, getVectorLength } from "./utils/vector";
+import { points } from "./runner";
+import { getVectorLength } from "./utils/vector";
 
 let customSizes = true;
 let showArrows = false;
 let showSpeedArrows = false;
 let TARGET_FPS = 45;
 const maxSpeedLengthForRed = 20;
-type TMouseMode = "attract" | "repel" | "draw-obstacles" | "erase-obstacles" | "add-water" | "erase-water";
-const BRUSH_STEP = 10;
-const DRAW_OBSTACLES_INTERVAL_MS = 16;
-const ADD_WATER_INTERVAL_MS = 20;
-let activeMouseMode: TMouseMode = "attract";
-
-const getMouseModeLabel = (mode: TMouseMode) => {
-    switch (mode) {
-        case "repel":
-            return "Repel";
-        case "draw-obstacles":
-            return "Draw obstacles";
-        case "erase-obstacles":
-            return "Erase obstacles";
-        case "add-water":
-            return "Add water";
-        case "erase-water":
-            return "Erase water";
-        case "attract":
-        default:
-            return "Attract";
-    }
-};
-
-const getPairedMouseMode = (mode: TMouseMode): TMouseMode => {
-    switch (mode) {
-        case "repel":
-            return "attract";
-        case "draw-obstacles":
-            return "erase-obstacles";
-        case "erase-obstacles":
-            return "draw-obstacles";
-        case "add-water":
-            return "erase-water";
-        case "erase-water":
-            return "add-water";
-        case "attract":
-        default:
-            return "repel";
-    }
-};
 
 initControl('input#maxFps', (e) => {
     const input = e.target as HTMLInputElement;
@@ -72,19 +31,6 @@ initControl('input#show-arrows-2', (e) => {
     showSpeedArrows = input.checked;
 })
 
-initControl('select#mouse-mode', (e) => {
-    activeMouseMode = (e.target as HTMLSelectElement).value as TMouseMode;
-    setMousePosition(null);
-    const leftMouseHint = document.querySelector('#left-mouse-hint') as HTMLSpanElement | null;
-    const rightMouseHint = document.querySelector('#right-mouse-hint') as HTMLSpanElement | null;
-    if (leftMouseHint) {
-        leftMouseHint.textContent = getMouseModeLabel(activeMouseMode);
-    }
-    if (rightMouseHint) {
-        rightMouseHint.textContent = getMouseModeLabel(getPairedMouseMode(activeMouseMode));
-    }
-}, false)
-
 export const initRender = () => {
     const canvas = document.createElement("canvas");
     canvas.width = BORDERS.maxX;
@@ -99,14 +45,9 @@ export const initRender = () => {
 
     let currentMousePosition: TVector | null = null;
     let isPressed = false;
-    let activeMouseButton: 0 | 2 | null = null;
-    let lastPaintPosition: TVector | null = null;
-    let lastPaintAt = 0;
 
     const cursorCircle = document.querySelector('.cursor-circle') as HTMLDivElement;
     const cursorInfo = document.querySelector('.info') as HTMLDivElement;
-    const leftMouseHint = document.querySelector('#left-mouse-hint') as HTMLSpanElement | null;
-    const rightMouseHint = document.querySelector('#right-mouse-hint') as HTMLSpanElement | null;
     const radius = 20;
     const renderMouse = () => {
         if (!currentMousePosition) {
@@ -153,107 +94,10 @@ export const initRender = () => {
         }
     }
 
-    const updateMouseHints = () => {
-        if (leftMouseHint) {
-            leftMouseHint.textContent = getMouseModeLabel(activeMouseMode);
-        }
-
-        if (rightMouseHint) {
-            rightMouseHint.textContent = getMouseModeLabel(getPairedMouseMode(activeMouseMode));
-        }
-    };
-
     const renderMouseLoop = () => {
-        if (isPressed && currentMousePosition && !isForceMode(getCurrentPointerMode())) {
-            applyMouseMode(currentMousePosition);
-        }
         renderMouse();
         requestAnimationFrame(renderMouseLoop);
     }
-    updateMouseHints();
-
-    const getCurrentPointerMode = (): TMouseMode => {
-        if (activeMouseButton === 2) {
-            return getPairedMouseMode(activeMouseMode);
-        }
-
-        return activeMouseMode;
-    };
-
-    const isForceMode = (mode: TMouseMode): mode is "attract" | "repel" => {
-        return mode === "attract" || mode === "repel";
-    };
-
-    const paintAt = (position: TVector, mode: TMouseMode) => {
-        if (mode === "draw-obstacles") {
-            addObstacleAt(position);
-        }
-
-        if (mode === "erase-obstacles") {
-            removeObstacleAt(position);
-        }
-
-        if (mode === "add-water") {
-            addWaterAt(position);
-        }
-
-        if (mode === "erase-water") {
-            removeWaterAt(position);
-        }
-    };
-
-    const paintBetween = (from: TVector | null, to: TVector, mode: TMouseMode, force = false) => {
-        const now = Date.now();
-        const brushInterval = mode === "add-water" ? ADD_WATER_INTERVAL_MS : DRAW_OBSTACLES_INTERVAL_MS;
-        if (!force && now - lastPaintAt < brushInterval) {
-            return;
-        }
-
-        const distance = from ? getDistance(from, to) : 0;
-        const steps = from ? Math.max(1, Math.ceil(distance / BRUSH_STEP)) : 1;
-
-        for (let step = 0; step <= steps; step++) {
-            const progress = step / steps;
-            const position = from ? {
-                x: from.x + (to.x - from.x) * progress,
-                y: from.y + (to.y - from.y) * progress,
-            } : to;
-            paintAt(position, mode);
-        }
-
-        lastPaintAt = now;
-        lastPaintPosition = to;
-    };
-
-    const applyMouseMode = (position: TVector | null, force = false) => {
-        if (!position) {
-            setMousePosition(null);
-            return;
-        }
-
-        const currentMode = getCurrentPointerMode();
-
-        if (isForceMode(currentMode)) {
-            setMousePosition(position, currentMode);
-            return;
-        }
-
-        setMousePosition(null);
-        paintBetween(lastPaintPosition, position, currentMode, force);
-    };
-
-    const stopInteraction = (clearCursor = false) => {
-        setMousePosition(null);
-        isPressed = false;
-        activeMouseButton = null;
-        lastPaintPosition = null;
-        lastPaintAt = 0;
-
-        if (clearCursor) {
-            currentMousePosition = null;
-            renderMouse();
-        }
-    };
 
     renderMouse();
     requestAnimationFrame(renderMouseLoop);
@@ -268,12 +112,15 @@ export const initRender = () => {
         };
         renderMouse();
         if (isPressed) {
-            applyMouseMode(currentMousePosition);
+            setMousePosition(currentMousePosition);
         }
     });
 
     canvas.addEventListener("mouseleave", () => {
-        stopInteraction(true);
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
+        renderMouse();
     });
 
     canvas.addEventListener('contextmenu', (e) => {
@@ -281,20 +128,16 @@ export const initRender = () => {
     })
 
     canvas.addEventListener('mousedown', (e) => {
+        console.log(e.button);
         e.preventDefault();
-        if (!currentMousePosition) {
-            return;
-        }
-        activeMouseButton = e.button === 2 ? 2 : 0;
+        const isRightClick = e.button === 2;
+        setMousePosition(currentMousePosition, isRightClick ? -1 : 1);
         isPressed = true;
-        applyMouseMode(currentMousePosition, true);
     })
 
-    canvas.addEventListener('mouseup', (e) => {
-        if (activeMouseButton !== null && e.button !== activeMouseButton) {
-            return;
-        }
-        stopInteraction();
+    canvas.addEventListener('mouseup', () => {
+        setMousePosition(null);
+        isPressed = false;
     })
 
     canvas.addEventListener("touchmove", (event) => {
@@ -307,16 +150,20 @@ export const initRender = () => {
             y: pixelY,
         };
         if (isPressed) {
-            applyMouseMode(currentMousePosition);
+            setMousePosition(currentMousePosition);
         }
     });
 
     canvas.addEventListener("touchend", () => {
-        stopInteraction(true);
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
     });
 
     canvas.addEventListener("touchcancel", () => {
-        stopInteraction(true);
+        currentMousePosition = null;
+        setMousePosition(null);
+        isPressed = false;
     });
 
     canvas.addEventListener("touchstart", (event) => {
@@ -324,10 +171,8 @@ export const initRender = () => {
         const pixelX = touch.clientX;
         const pixelY = touch.clientY;
 
-        currentMousePosition = { x: pixelX, y: pixelY };
+        setMousePosition({ x: pixelX, y: pixelY }, 1);
         isPressed = true;
-        renderMouse();
-        applyMouseMode(currentMousePosition, true);
     });
 
     const ctx = canvas.getContext('2d');
