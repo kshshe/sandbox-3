@@ -2,7 +2,7 @@ import { BORDERS } from "./constants";
 import { initControl } from "./controls";
 import { TVector } from "./data.t";
 import { setMousePosition } from "./powers/mouse";
-import { addObstacleAt, addWaterAt, points } from "./runner";
+import { addObstacleAt, addWaterAt, points, removeObstacleAt, removeWaterAt } from "./runner";
 import { getDistance, getVectorLength } from "./utils/vector";
 
 let customSizes = true;
@@ -10,7 +10,7 @@ let showArrows = false;
 let showSpeedArrows = false;
 let TARGET_FPS = 45;
 const maxSpeedLengthForRed = 20;
-type TMouseMode = "attract" | "repel" | "draw-obstacles" | "add-water";
+type TMouseMode = "attract" | "repel" | "draw-obstacles" | "erase-obstacles" | "add-water" | "erase-water";
 const BRUSH_STEP = 10;
 const DRAW_OBSTACLES_INTERVAL_MS = 16;
 const ADD_WATER_INTERVAL_MS = 20;
@@ -22,11 +22,33 @@ const getMouseModeLabel = (mode: TMouseMode) => {
             return "Repel";
         case "draw-obstacles":
             return "Draw obstacles";
+        case "erase-obstacles":
+            return "Erase obstacles";
         case "add-water":
             return "Add water";
+        case "erase-water":
+            return "Erase water";
         case "attract":
         default:
             return "Attract";
+    }
+};
+
+const getPairedMouseMode = (mode: TMouseMode): TMouseMode => {
+    switch (mode) {
+        case "repel":
+            return "attract";
+        case "draw-obstacles":
+            return "erase-obstacles";
+        case "erase-obstacles":
+            return "draw-obstacles";
+        case "add-water":
+            return "erase-water";
+        case "erase-water":
+            return "add-water";
+        case "attract":
+        default:
+            return "repel";
     }
 };
 
@@ -54,8 +76,12 @@ initControl('select#mouse-mode', (e) => {
     activeMouseMode = (e.target as HTMLSelectElement).value as TMouseMode;
     setMousePosition(null);
     const leftMouseHint = document.querySelector('#left-mouse-hint') as HTMLSpanElement | null;
+    const rightMouseHint = document.querySelector('#right-mouse-hint') as HTMLSpanElement | null;
     if (leftMouseHint) {
         leftMouseHint.textContent = getMouseModeLabel(activeMouseMode);
+    }
+    if (rightMouseHint) {
+        rightMouseHint.textContent = getMouseModeLabel(getPairedMouseMode(activeMouseMode));
     }
 }, false)
 
@@ -79,6 +105,8 @@ export const initRender = () => {
 
     const cursorCircle = document.querySelector('.cursor-circle') as HTMLDivElement;
     const cursorInfo = document.querySelector('.info') as HTMLDivElement;
+    const leftMouseHint = document.querySelector('#left-mouse-hint') as HTMLSpanElement | null;
+    const rightMouseHint = document.querySelector('#right-mouse-hint') as HTMLSpanElement | null;
     const radius = 20;
     const renderMouse = () => {
         if (!currentMousePosition) {
@@ -125,22 +153,28 @@ export const initRender = () => {
         }
     }
 
+    const updateMouseHints = () => {
+        if (leftMouseHint) {
+            leftMouseHint.textContent = getMouseModeLabel(activeMouseMode);
+        }
+
+        if (rightMouseHint) {
+            rightMouseHint.textContent = getMouseModeLabel(getPairedMouseMode(activeMouseMode));
+        }
+    };
+
     const renderMouseLoop = () => {
-        if (isPressed && currentMousePosition && getCurrentPointerMode() === "add-water") {
+        if (isPressed && currentMousePosition && !isForceMode(getCurrentPointerMode())) {
             applyMouseMode(currentMousePosition);
         }
         renderMouse();
         requestAnimationFrame(renderMouseLoop);
     }
-
-    const leftMouseHint = document.querySelector('#left-mouse-hint') as HTMLSpanElement | null;
-    if (leftMouseHint) {
-        leftMouseHint.textContent = getMouseModeLabel(activeMouseMode);
-    }
+    updateMouseHints();
 
     const getCurrentPointerMode = (): TMouseMode => {
         if (activeMouseButton === 2) {
-            return "repel";
+            return getPairedMouseMode(activeMouseMode);
         }
 
         return activeMouseMode;
@@ -155,8 +189,16 @@ export const initRender = () => {
             addObstacleAt(position);
         }
 
+        if (mode === "erase-obstacles") {
+            removeObstacleAt(position);
+        }
+
         if (mode === "add-water") {
             addWaterAt(position);
+        }
+
+        if (mode === "erase-water") {
+            removeWaterAt(position);
         }
     };
 

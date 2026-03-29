@@ -2,7 +2,7 @@ import { BORDERS, INITIAL_POINTS_COUNT, MAX_ACCELERATION, MAX_FRAME_TIME, MAX_PO
 import { initControl } from "./controls";
 import { TPoint, TVector } from "./data.t";
 import { powers } from "./powers";
-import { getVectorLength, multiplyVector } from "./utils/vector";
+import { getDistance, getVectorLength, multiplyVector } from "./utils/vector";
 import { FPS } from 'yy-fps'
 const fps = new FPS({
     FPS: 1000,
@@ -68,6 +68,7 @@ export const createPoint = (x?: number, y?: number, isStatic?: boolean, rotating
 
 const WATER_BRUSH_POINTS = 1;
 const WATER_BRUSH_RADIUS = 50;
+const WATER_ERASE_RADIUS = 28;
 const OBSTACLE_BRUSH_OFFSETS: TVector[] = [
     { x: 0, y: 0 },
     { x: 4, y: 0 },
@@ -75,6 +76,7 @@ const OBSTACLE_BRUSH_OFFSETS: TVector[] = [
     { x: 0, y: 4 },
     { x: 0, y: -4 },
 ];
+const OBSTACLE_ERASE_RADIUS = 8;
 
 const clampPosition = (position: TVector): TVector => ({
     x: Math.min(BORDERS.maxX - POINT_RADIUS, Math.max(BORDERS.minX + POINT_RADIUS, position.x)),
@@ -96,6 +98,16 @@ export const addWaterAt = (position: TVector) => {
     }
 };
 
+export const removeWaterAt = (position: TVector) => {
+    points = points.filter((point) => {
+        if (point.isStatic) {
+            return true;
+        }
+
+        return getDistance(point.position, position) > WATER_ERASE_RADIUS;
+    });
+};
+
 export const addObstacleAt = (position: TVector) => {
     for (const offset of OBSTACLE_BRUSH_OFFSETS) {
         const targetPosition = clampPosition({
@@ -104,6 +116,18 @@ export const addObstacleAt = (position: TVector) => {
         });
         points.push(createPoint(targetPosition.x, targetPosition.y, true));
     }
+
+    updateDeleteObstaclesButtonVisibility();
+};
+
+export const removeObstacleAt = (position: TVector) => {
+    points = points.filter((point) => {
+        if (!point.isStatic) {
+            return true;
+        }
+
+        return getDistance(point.position, position) > OBSTACLE_ERASE_RADIUS;
+    });
 
     updateDeleteObstaclesButtonVisibility();
 };
